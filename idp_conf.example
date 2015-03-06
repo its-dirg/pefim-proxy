@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os
-from idproxy.provider.idp.userinfo import DictionaryInformation
+from pefimproxy.provider.idp.userinfo import DictionaryInformation
 import server_conf
 from dirg_util.dict import Sqllite3Dict, LDAPDict
 from saml2.authn_context import authn_context_class_ref, UNSPECIFIED, PASSWORD

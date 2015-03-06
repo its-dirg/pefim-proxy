@@ -21,7 +21,7 @@ IDP_FRONTEND = True
 OP_FRONTEND = True
 
 #Filename for log.
-LOG_FILE = 'idproxy_server.log'
+LOG_FILE = 'server.log'
 
 #If HTTPS is true you have to assign the server cert, key and certificate chain.
 SERVER_CERT = "httpsCert/localhost.crt"

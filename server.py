@@ -1,6 +1,6 @@
 from uuid import uuid4
-from idproxy.client.sp.handler import SpHandler
-from idproxy.provider.idp.handler import IdPHandler
+from pefimproxy.client.sp.handler import SpHandler
+from pefimproxy.provider.idp.handler import IdPHandler
 import server_conf
 
 __author__ = 'haho0032'
@@ -8,7 +8,6 @@ __author__ = 'haho0032'
 from dirg_util.log import create_logger
 from dirg_util.http_util import HttpHandler, BadRequest
 from dirg_util.session import Session
-from idproxy.provider.op.handler import OpHandler
 #Imports within DIG
 
 #External imports
@@ -58,6 +57,7 @@ def application(environ, start_response):
         http_helper.log_request()
         response = None
         if server_conf.IDP_FRONTEND and idphandler.verify_provider_requests(path, environ):
+            raise Exception()
             response = idphandler.handle_provider_requests(environ, start_response, path)
         elif sphandler.verify_sp_requests(path):
             response = sphandler.handle_sp_requests(environ, start_response, path, session)
