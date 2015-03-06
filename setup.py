@@ -10,7 +10,7 @@ setup(
     license="Apache 2.0",
     packages=["pefim-proxy", "pefim-proxy/client", "pefim-proxy/client/sp",
               "pefim-proxy/provider", "pefim-proxy/provider/idp", "pefim-proxy/provider/idp/auth",
-              "pefim-proxy/provider/op", "pefim-proxy/util"],
+              "pefim-proxy/util"],
     package_dir = {"": "src"},
     classifiers = ["Development Status :: 0.1 - Beta",
         "License :: OSI Approved :: Apache Software License",

@@ -1,0 +1,8 @@
+oic
+requests
+pycrypto
+cherrypy==3.2.4
+mako
+pyjwkest
+beaker
+argparse
