@@ -3,10 +3,10 @@ import urllib
 __author__ = 'haho0032'
 import logging
 from saml2.httputil import Redirect, Unauthorized
-from idproxy.client.sp.handler import SpHandler
+from pefimproxy.client.sp.handler import SpHandler
 from dirg_util.http_util import HttpHandler
 from dirg_util.session import Session
-from idproxy.provider.idp.auth.util import IdPAuthentication
+from pefimproxy.provider.idp.auth.util import IdPAuthentication
 
 
 logger = logging.getLogger("pyOpSamlProxy.provider.idp.auth.sp")

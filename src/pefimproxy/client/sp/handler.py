@@ -18,7 +18,7 @@ import time
 import re
 from saml2.client import Saml2Client
 from oic.utils.http_util import Redirect
-from idproxy.client.sp.util import SSO, ACS, Cache
+from pefimproxy.client.sp.util import SSO, ACS, Cache
 from Crypto import Random
 from saml2.s_utils import sid
 from dirg_util.http_util import Unauthorized

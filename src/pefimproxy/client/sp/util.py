@@ -4,8 +4,8 @@ from saml2.extension.pefim import SPCertEnc
 from saml2.md import Extensions
 
 import xmldsig as ds
-from idproxy import ServiceErrorException
-from idproxy.util.saml import Service
+from pefimproxy import ServiceErrorException
+from pefimproxy.util.saml import Service
 from urlparse import parse_qs
 from saml2 import BINDING_HTTP_REDIRECT, element_to_extension_element
 from saml2 import ecp

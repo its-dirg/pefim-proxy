@@ -4,11 +4,8 @@ from saml2.httputil import Unauthorized
 from saml2.metadata import create_metadata_string
 from dirg_util.http_util import HttpHandler
 
-from idproxy.provider.idp.auth.cas import CasAuth
-from idproxy.provider.idp.auth.multiple import MultipleAuthentication
-from idproxy.provider.idp.auth.password import PasswordYubikeyAuth
-from idproxy.provider.idp.auth.sp import SpAuthentication
-from idproxy.provider.idp.auth.unspecified import UnspecifiedAuth
+from pefimproxy.provider.idp.auth.sp import SpAuthentication
+from pefimproxy.provider.idp.auth.unspecified import UnspecifiedAuth
 
 
 __author__ = 'haho0032'
@@ -22,16 +19,16 @@ from saml2 import time_util
 from saml2.authn_context import AuthnBroker
 from saml2.authn_context import UNSPECIFIED
 from saml2.authn_context import authn_context_class_ref
-from idproxy.provider.idp.util import Cache
-from idproxy.provider.idp.util import SSO
-from idproxy.provider.idp.util import SLO
-from idproxy.provider.idp.util import AIDR
-from idproxy.provider.idp.util import ARS
-from idproxy.provider.idp.util import NMI
-from idproxy.provider.idp.util import NIM
-from idproxy.provider.idp.util import AQS
-from idproxy.provider.idp.util import ATTR
-from idproxy.provider.idp.util import AuthCookie
+from pefimproxy.provider.idp.util import Cache
+from pefimproxy.provider.idp.util import SSO
+from pefimproxy.provider.idp.util import SLO
+from pefimproxy.provider.idp.util import AIDR
+from pefimproxy.provider.idp.util import ARS
+from pefimproxy.provider.idp.util import NMI
+from pefimproxy.provider.idp.util import NIM
+from pefimproxy.provider.idp.util import AQS
+from pefimproxy.provider.idp.util import ATTR
+from pefimproxy.provider.idp.util import AuthCookie
 
 
 #Add a logger for this class.
@@ -137,13 +134,7 @@ class IdPHandler(object):
     def setup_authn_broker(self, base_url, sphandler, authorization):
         ab = AuthnBroker()
         sphandler.sp_authentication = SpAuthentication(self, sphandler)
-        cas_auth = CasAuth(self, self.cas_server, self.service_url)
-        password_auth = PasswordYubikeyAuth(self, self.passwd, password=True,
-                                            yubikey=False)
-        yubikey_auth = PasswordYubikeyAuth(self, self.passwd, password=False,
-                                           yubikey=True)
-        password_yubikey_auth = PasswordYubikeyAuth(self, self.passwd, password=True,
-                                                    yubikey=True)
+
         for authkey, value in authorization.items():
             level = str(value[IdPHandler.AUTHORIZATION_WEIGHT])
             url = value[IdPHandler.AUTHORIZATION_URL]
@@ -152,33 +143,6 @@ class IdPHandler(object):
             if authkey == IdPHandler.AUTHORIZATION_SAML:
                 sphandler.sp_authentication.user_info(user_info)
                 ab.add(acr, sphandler.sp_authentication, level, url)
-            elif authkey == IdPHandler.AUTHORIZATION_CAS:
-                cas_auth.user_info(user_info)
-                ab.add(acr, cas_auth, level, url)
-            elif authkey == IdPHandler.AUTHORIZATION_PASSWORD_YUBIKEY:
-                password_yubikey_auth.user_info(user_info)
-                ab.add(acr, password_yubikey_auth, level, url)
-            elif authkey == IdPHandler.AUTHORIZATION_PASSWORD:
-                password_auth.user_info(user_info)
-                ab.add(acr, password_auth, level, url)
-            elif authkey == IdPHandler.AUTHORIZATION_YUBIKEY:
-                yubikey_auth.user_info(user_info)
-                ab.add(acr, yubikey_auth, level, url)
-            elif authkey == IdPHandler.AUTHORIZATION_MULTIPLEAUTHN:
-                authn_list = []
-                for m_items in value[IdPHandler.AUTHENTICATION_AUTHNLIST]:
-                    m_authkey = m_items[IdPHandler.AUTHORIZATION_ACR]
-                    if m_authkey == IdPHandler.AUTHORIZATION_SAML:
-                        authn_list.append(sphandler.sp_authentication)
-                    elif m_authkey == IdPHandler.AUTHORIZATION_CAS:
-                        authn_list.append(cas_auth)
-                    elif m_authkey == IdPHandler.AUTHORIZATION_PASSWORD_YUBIKEY:
-                        authn_list.append(password_yubikey_auth)
-                    elif m_authkey == IdPHandler.AUTHORIZATION_PASSWORD:
-                        authn_list.append(password_auth)
-                    elif m_authkey == IdPHandler.AUTHORIZATION_YUBIKEY:
-                        authn_list.append(yubikey_auth)
-                ab.add(acr, MultipleAuthentication(self, authn_list, user_info), level, url)
             else:
                 ab.add(authn_context_class_ref(UNSPECIFIED), UnspecifiedAuth(self), level, url)
         return ab

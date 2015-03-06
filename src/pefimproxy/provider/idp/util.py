@@ -23,7 +23,7 @@ from saml2.s_utils import PolicyError
 from saml2.sigver import verify_redirect_signature, encrypt_cert_from_item, pre_encrypt_assertion, \
     CryptoBackendXMLSecurity, CryptoBackendXmlSec1, pre_signature_part
 
-from idproxy.util.saml import Service
+from pefimproxy.util.saml import Service
 
 
 #Add a logger for this class.
