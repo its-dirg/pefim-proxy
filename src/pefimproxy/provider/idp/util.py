@@ -144,6 +144,7 @@ class SSO(Service):
             override_encrypt_assertion = None
             override_sign_response = None
             assertion = None
+            namespace_dict = {}
             encrypted_assertion = None
             authnresponse = None
             namespace_list = None
@@ -154,6 +155,12 @@ class SSO(Service):
                 try:
                     sp_handler_cache = method.sp_handler_cache(self.environ, self.start_response, self.user)
                     assertion = sp_handler_cache.assertion
+                    tmp_namespace_dict = sp_handler_cache.namespace_dict
+                    for ns in tmp_namespace_dict:
+                        if isinstance(tmp_namespace_dict[ns], tuple):
+                            namespace_dict[ns] = ''.join( c for c in tmp_namespace_dict[ns][0] if  c not in '?";' )
+                        else:
+                            namespace_dict[ns] = tmp_namespace_dict[ns]
                     encrypted_assertion = sp_handler_cache.encrypted_assertion
                     authnresponse = sp_handler_cache.authnresponse
                     namespace_list = sp_handler_cache.namespace_dict
@@ -198,25 +205,25 @@ class SSO(Service):
                 e_cat_attr = self.idphandler.idp_server.config.getattr("policy", "idp").\
                     get_entity_categories(resp_args["sp_entity_id"], self.idphandler.idp_server.metadata)
 
-                if assertion is not None or encrypted_assertion is not None:
-                    try:
-                        for k in req_attr["required"]:
-                            if k['friendly_name'] not in identity:
-                                identity[k['friendly_name']] = ''
-                    except Exception:
-                        pass
-                    try:
-                        for k in req_attr["optional"]:
-                            if k['friendly_name'] not in identity:
-                                identity[k['friendly_name']] = ''
-                    except Exception:
-                        pass
-                    try:
-                        for k in e_cat_attr:
-                            if k not in identity:
-                                identity[k] = ''
-                    except Exception:
-                        pass
+                #if assertion is not None or encrypted_assertion is not None:
+                #    try:
+                #        for k in req_attr["required"]:
+                #            if k['friendly_name'] not in identity:
+                #                identity[k['friendly_name']] = ''
+                #    except Exception:
+                #        pass
+                #    try:
+                #        for k in req_attr["optional"]:
+                #            if k['friendly_name'] not in identity:
+                #                identity[k['friendly_name']] = ''
+                #    except Exception:
+                #        pass
+                #    try:
+                #        for k in e_cat_attr:
+                #            if k not in identity:
+                #                identity[k] = ''
+                #    except Exception:
+                #        pass
 
                 _resp = self.idphandler.idp_server.create_authn_response(
                     identity, userid=self.user,
@@ -241,7 +248,7 @@ class SSO(Service):
                         for k, v in namespace_list.iteritems():
                             tmp_namespace_list[k] = v[0]
                         #_resp.c_ns_prefix = tmp_namespace_list
-                        xml_str = str(_resp)
+                        xml_str = _resp.to_string_force_namespace(namespace_dict)
 
                         replace_dict = {}
                         response_search = xml_str.split(">")
