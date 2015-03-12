@@ -372,8 +372,8 @@ class SpHandler:
                     if isinstance(saml_response, list):
                         saml_response = saml_response[0]
                     xmlstr = self.sp.unravel(saml_response, BINDING_HTTP_POST, AuthnResponse.msgtype)
-
                     authn_response.loads(xmlstr, False)
+
                     namespace_dict = {}
                     response_search = xmlstr.split(">")
                     for item_resp in response_search:
