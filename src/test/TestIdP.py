@@ -73,6 +73,8 @@ class TestIdP(object):
         _resp = self.idp.create_authn_response(TestIdP.USERS[userid],
                                                userid=userid,
                                                encrypt_cert=_encrypt_cert,
+                                               encrypt_assertion_self_contained=True,
+                                               encrypted_advice_attributes=True,
                                                **resp_args)
         kwargs = {}
         http_args = self.idp.apply_binding(BINDING_HTTP_POST,
@@ -86,6 +88,8 @@ class TestIdP(object):
 
     def verify_authn_response_ava(self, ava, userid):
         data = TestIdP.USERS[userid]
+        if ava is None or "uid" not in ava:
+            return False
         for key in ava:
             if key not in data:
                 return False

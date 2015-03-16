@@ -140,18 +140,20 @@ class SamlIDP(service.Service):
                                                sign_response=False,
                                                **resp_args)
 
-        #TODO GET NAME_ID
-        _resp.encrypted_assertion = org_resp.response.encrypted_assertion
-        _resp.assertion = []
+        #TODO GET NAME_ID FROM org_resp.response.assertion
+        advice = None
+        for tmp_assertion in org_resp.response.assertion:
+            if tmp_assertion.advice is not None:
+                advice = tmp_assertion.advice
+                break
+        if advice is not None:
+            _resp.assertion.advice = advice
+        #_resp.assertion = []
 
         if sign_response:
-
-            namespace_dict = {'xsi': 'http://www.w3.org/2001/XMLSchema-instance'}
             _class_sign = class_name(_resp)
             _resp.signature = pre_signature_part(_resp.id, self.idp.sec.my_cert, 1)
-            xml_str = _resp.to_string_force_namespace(namespace_dict)
-            _resp = self.idp.sec.sign_statement(xml_str, _class_sign, node_id=_resp.id)
-
+            _resp = self.idp.sec.sign_statement(_resp, _class_sign, node_id=_resp.id)
         http_args = self.idp.apply_binding(
             resp_args["binding"], "%s" % _resp, resp_args["destination"],
             relay_state, response=True)
