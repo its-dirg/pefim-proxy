@@ -10,12 +10,14 @@ from saml2.client import Saml2Client
 from saml2 import s_utils
 from saml2.md import Extensions
 import xmldsig
+import os
 
+BASEDIR = os.path.abspath(os.path.dirname(__file__))
 
 class TestSp(object):
-    def __init__(self, conf_name = None):
+    def __init__(self, conf_name=None):
         if conf_name is None:
-            conf_name = "/Users/haho0032/Develop/github/pefim-proxy/src/test/external_config_test_sp"
+            conf_name = BASEDIR + "/external_config_test_sp"
         self.sp = Saml2Client(config_file="%s" % conf_name)
         self.bindings = [BINDING_HTTP_REDIRECT, BINDING_HTTP_POST, BINDING_HTTP_ARTIFACT]
         self.rstate = None
@@ -40,8 +42,8 @@ class TestSp(object):
             "organization_unit": "DIRG"
         }
         osw = OpenSSLWrapper()
-        ca_cert_str = osw.read_str_from_file("/Users/haho0032/Develop/root_cert/localhost.ca.crt")
-        ca_key_str = osw.read_str_from_file("/Users/haho0032/Develop/root_cert/localhost.ca.key")
+        ca_cert_str = osw.read_str_from_file(BASEDIR + "/root_cert/localhost.ca.crt")
+        ca_key_str = osw.read_str_from_file(BASEDIR + "/root_cert/localhost.ca.key")
         req_cert_str, req_key_str = osw.create_certificate(cert_info, request=True, sn=sn, key_length=2048)
         cert_str = osw.create_cert_signed_certificate(ca_cert_str, ca_key_str, req_cert_str)
         return cert_str, req_key_str
