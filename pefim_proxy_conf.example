@@ -78,8 +78,8 @@ CONFIG = {
     "cert_file": full_path("proxy_cert/new_server.crt"),
     "metadata": {
         #"mdfile": ["swamid2.md"],
-        "local": ["/Users/haho0032/Develop/github/pefim-proxy/src/test/external_config_test_sp.xml",
-                  "/Users/haho0032/Develop/github/pefim-proxy/src/test/external_config_test_idp.xml"]
+        "local": [BASEDIR + "/src/test/external_config_test_sp.xml",
+                  BASEDIR + "/src/test/external_config_test_idp.xml"]
     },
     "organization": {
         "display_name": "Test Testsson",

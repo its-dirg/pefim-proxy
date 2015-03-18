@@ -140,7 +140,7 @@ class SamlIDP(service.Service):
                                                sign_response=False,
                                                **resp_args)
 
-        #TODO GET NAME_ID FROM org_resp.response.assertion
+        #TODO GET NAME_ID FROM org_resp.response.assertion and save to a db.
         advice = None
         for tmp_assertion in org_resp.response.assertion:
             if tmp_assertion.advice is not None:

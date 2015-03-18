@@ -14,6 +14,7 @@ import os
 
 BASEDIR = os.path.abspath(os.path.dirname(__file__))
 
+
 class TestSp(object):
     def __init__(self, conf_name=None):
         if conf_name is None:
