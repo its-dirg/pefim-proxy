@@ -34,6 +34,7 @@ class SamlSP(service.Service):
         self.sp_dict = {}
         self.sp = None
         ent_cat = None
+        self.sp_error_resp = None
         if sp_key is not None:
             self.sp = Base(config[sp_key]["config"], state_cache=cache)
         else:
@@ -46,6 +47,12 @@ class SamlSP(service.Service):
                     break
                 elif ent_cat is None:
                     self.sp_dict[key] = Base(tmp_conf["config"], state_cache=cache)
+        if self.sp is None and (sp_key is not None or calling_sp_entity_id is not None):
+            if "default" in config:
+                self.sp = Base(config["default"]["config"], state_cache=cache)
+            else:
+                logger.error("UnsupportedBinding: %s" % (ent_cat,))
+                self.sp_error_resp = ServiceError("UnsupportedEntityCategory: %" % (ent_cat,))
         #self.sp = Base(config, state_cache=cache)
         self.environ = environ
         self.start_response = start_response
@@ -72,7 +79,7 @@ class SamlSP(service.Service):
             entity_id = info[self.idp_query_param]
         except KeyError:
             resp = Unauthorized("You must chose an IdP")
-            return resp(self.environ, self.start_response)
+            return resp
         else:
             # should I check the state variable ?
             return self.authn_request(entity_id, info["state"])
@@ -148,7 +155,7 @@ class SamlSP(service.Service):
             logger.exception(exc)
             resp = ServiceError(
                 "Failed to construct the AuthnRequest: %s" % exc)
-            return resp(self.environ, self.start_response)
+            return resp
 
         # remember the request
         self.cache[_sid] = state_key
@@ -169,7 +176,7 @@ class SamlSP(service.Service):
         if not _authn_response["SAMLResponse"]:
             logger.info("Missing Response")
             resp = Unauthorized('Unknown user')
-            return resp(self.environ, self.start_response)
+            return resp
 
         try:
             _response = self.sp.parse_authn_request_response(_authn_response["SAMLResponse"], binding, self.cache,
@@ -177,17 +184,17 @@ class SamlSP(service.Service):
         except UnknownPrincipal, excp:
             logger.error("UnknownPrincipal: %s" % (excp,))
             resp = ServiceError("UnknownPrincipal: %s" % (excp,))
-            return resp(self.environ, self.start_response)
+            return resp
         except UnsupportedBinding, excp:
             logger.error("UnsupportedBinding: %s" % (excp,))
             resp = ServiceError("UnsupportedBinding: %s" % (excp,))
-            return resp(self.environ, self.start_response)
+            return resp
         except VerificationError, err:
             resp = ServiceError("Verification error: %s" % (err,))
-            return resp(self.environ, self.start_response)
+            return resp
         except Exception, err:
             resp = ServiceError("Other error: %s" % (err,))
-            return resp(self.environ, self.start_response)
+            return resp
 
         org_xml_response = self.sp.unravel(_authn_response["SAMLResponse"], binding, AuthnResponse.msgtype)
 

@@ -132,6 +132,8 @@ class WsgiApplication(object):
         calling_sp_entity_id = info["authn_req"].issuer.text
         inst = SamlSP(environ, start_response, self.config["SP"], self.cache, self.outgoing, calling_sp_entity_id,
                       **self.sp_args)
+        if inst.sp_error_resp is not None:
+            return inst.sp_error_resp
         if self.entity_id:
             state_key = inst.store_state(info["authn_req"], relay_state,
                                          info["req_args"])

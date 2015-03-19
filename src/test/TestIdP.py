@@ -23,6 +23,27 @@ class TestIdP(object):
 
     USERS = {
         "testuser1": {
+            "c": "SE",
+            "displayName": "Hans Hoerberg",
+            "eduPersonPrincipalName": "haho@example.com",
+            "eduPersonScopedAffiliation": "staff@example.com",
+            "eduPersonTargetedID": "one!for!all",
+            "email": "hans@example.com",
+            "givenName": "Hans",
+            "initials": "P",
+            "labeledURL": "http://www.example.com/haho My homepage",
+            "norEduPersonNIN": "SE199012315555",
+            "o": "Example Co.",
+            "ou": "IT",
+            "schacHomeOrganization": "example.com",
+            "sn": "Hoerberg",
+            "uid": "haho",
+            "PVP-VERSION": "2.1",
+            "PVP-PRINCIPALNAME": "Hoerberg",
+            "PVP-PARTICIPANT-ID": "AT:TEST:1",
+            "PVP-ROLES": "admin",
+        },
+        "testuser2": {
             "sn": "Testsson",
             "givenName": "Test",
             "eduPersonAffiliation": "student",
@@ -40,6 +61,7 @@ class TestIdP(object):
             "labeledURL": "http://www.example.com/haho My homepage",
             "norEduPersonNIN": "SE199012315555"
         },
+
     }
 
     def __init__(self, conf_name=None):

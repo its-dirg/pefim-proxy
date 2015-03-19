@@ -14,30 +14,10 @@ def get_configurations(config_file, metadata_construction=True, metadata=None, c
         pass
     assert conf, "No configuration/invalid file with the name: %s" % config_file
     #idp_conf = config_factory("idp", config_file)
-    assert conf.ENTITY_CATEGORIES, "The configuration file must contain a list of entity categories in." \
-                                   " ENTITY_CATEGORIES"
-    assert isinstance(conf.ENTITY_CATEGORIES, list), "ENTITY_CATEGORIES must be a list."
-    assert len(conf.ENTITY_CATEGORIES)>0, "ENTITY_CATEGORIES list must not be empty."
-
-    sp_entity_categories = []
-    for entcat_file in conf.ENTITY_CATEGORIES:
-        entcat_module = None
-        try:
-            entcat_module = import_module(".." + entcat_file,"saml2.entity_category.")
-        except:
-            pass
-        assert entcat_module, "The module %s%s do not exist." % ("saml2.entity_category.", entcat_file)
-        assert entcat_module.RELEASE, "The entity category must have a RELEASE parameter!"
-        count = 0
-        for entcat_release in entcat_module.RELEASE:
-            count += 1
-            entcat_list = []
-            if isinstance(entcat_release, tuple):
-                for entcat in entcat_release:
-                    entcat_list.append(entcat)
-            else:
-                entcat_list.append(entcat_release)
-            sp_entity_categories.append({"name": "%s_%s"% (entcat_file, count), "entcat": entcat_list})
+    assert conf.SP_ENTITY_CATEGORIES, "The configuration file must contain a list of entity categories in." \
+                                      " SP_ENTITY_CATEGORIES"
+    assert isinstance(conf.SP_ENTITY_CATEGORIES, list), "SP_ENTITY_CATEGORIES must be a list."
+    assert len(conf.SP_ENTITY_CATEGORIES)>0, "SP_ENTITY_CATEGORIES list must not be empty."
 
     base_config = copy.deepcopy(copy.deepcopy(conf.CONFIG))
 
@@ -51,13 +31,15 @@ def get_configurations(config_file, metadata_construction=True, metadata=None, c
             new_endpoint.append((value[0] % "", value[1]))
         new_endpoints[endpoint] = new_endpoint
     idp_config["service"]["idp"]["endpoints"] = new_endpoints
-    #["service"]["sp"]
 
     sp_configs = {}
     sp_config = {}
+    sp_entity_categories = copy.deepcopy(conf.SP_ENTITY_CATEGORIES)
+    if conf.SP_ENTITY_CATEGORIES_DEFAULT is not None:
+        sp_entity_categories.append({"name": "default", "entcat": conf.SP_ENTITY_CATEGORIES_DEFAULT})
     for sp_cat in sp_entity_categories:
         sp_name = sp_cat["name"]
-        sp_url = "/" + sp_name + "_sp_"
+        sp_url = "/" + sp_name + "_sp"
         tmp_sp_config = copy.deepcopy(base_config)
         tmp_sp_config["entity_category"] = sp_cat["entcat"]
         del(tmp_sp_config["service"]["idp"])

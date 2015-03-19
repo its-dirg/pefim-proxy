@@ -101,7 +101,7 @@ CONFIG = {
                     "lifetime": {"minutes": 15},
                     "attribute_restrictions": None, # means all I have
                     "name_form": NAME_FORMAT_URI,
-                    #"entity_categories": ["swamid", "edugain"]
+                    "entity_categories": ["at_egov_pvp2"]
                 },
             },
             "subject_data": "./idp.subject",

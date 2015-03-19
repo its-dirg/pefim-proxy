@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 from saml2 import BINDING_HTTP_REDIRECT
 from saml2 import BINDING_HTTP_POST
+from saml2.entity_category.at_egov_pvp2 import PVP2, PVP2CHARGE
+from saml2.entity_category.swamid import RESEARCH_AND_EDUCATION, EU
 from saml2.extension.idpdisc import BINDING_DISCO
 from saml2.saml import NAME_FORMAT_URI
 from saml2.saml import NAMEID_FORMAT_TRANSIENT
@@ -29,9 +31,11 @@ BASE = pefim_server_conf.ISSUER + "%s"
 
 DISCO_SRV = "https://md.nordu.net/role/idp.ds"
 
-#This is the only place you can configure entity categories.
-#The will be an SP generated for each specified release in the RELEASE parameter in the given module.
-ENTITY_CATEGORIES = ["at_egov_pvp2", "swamid"]
+SP_ENTITY_CATEGORIES = [{"name": "pvp2", "entcat": [PVP2]}, {"name": "pvp2charge", "entcat": [PVP2CHARGE]},
+                        {"name": "re_eu", "entcat": [RESEARCH_AND_EDUCATION, EU]}]
+
+#None if no default SP should be used, otherwise a list. The list may be empty.
+SP_ENTITY_CATEGORIES_DEFAULT = []
 
 CONFIG = {
     "entityid": "%sproxy.xml" % BASE,
@@ -51,7 +55,7 @@ CONFIG = {
                     "lifetime": {"minutes": 15},
                     "attribute_restrictions": None,  # means all I have
                     "name_form": NAME_FORMAT_URI,
-                    "entity_categories": ENTITY_CATEGORIES,
+                    "entity_categories": ["at_egov_pvp2", "swamid"],
                     "fail_on_missing_requested": False
                 },
             },

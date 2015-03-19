@@ -39,7 +39,7 @@ class SamlIDP(service.Service):
         if not query:
             logger.info("Missing QUERY")
             resp = Unauthorized('Unknown user')
-            return {"response": resp(self.environ, self.start_response)}
+            return {"response": resp}
 
         req_info = self.idp.parse_authn_request(query, binding)
         encrypt_cert = encrypt_cert_from_item(req_info.message)
@@ -104,11 +104,11 @@ class SamlIDP(service.Service):
         except UnknownPrincipal as excp:
             logger.error("UnknownPrincipal: %s" % (excp,))
             resp = ServiceError("UnknownPrincipal: %s" % (excp,))
-            return resp(self.environ, self.start_response)
+            return resp
         except UnsupportedBinding as excp:
             logger.error("UnsupportedBinding: %s" % (excp,))
             resp = ServiceError("UnsupportedBinding: %s" % (excp,))
-            return resp(self.environ, self.start_response)
+            return resp
 
         _binding = _dict["resp_args"]["binding"]
         if _dict["response"]:  # An error response
