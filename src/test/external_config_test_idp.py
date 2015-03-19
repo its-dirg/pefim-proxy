@@ -99,7 +99,7 @@ CONFIG = {
             "policy": {
                 "default": {
                     "lifetime": {"minutes": 15},
-                    "attribute_restrictions": None, # means all I have
+                    #"attribute_restrictions": None, # means all I have
                     "name_form": NAME_FORMAT_URI,
                     "entity_categories": ["at_egov_pvp2"]
                 },

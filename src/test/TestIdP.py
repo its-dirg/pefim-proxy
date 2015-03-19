@@ -110,7 +110,7 @@ class TestIdP(object):
 
     def verify_authn_response_ava(self, ava, userid):
         data = TestIdP.USERS[userid]
-        if ava is None or "uid" not in ava:
+        if ava is None or "PVP-VERSION" not in ava:
             return False
         for key in ava:
             if key not in data:
