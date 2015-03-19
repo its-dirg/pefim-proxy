@@ -29,9 +29,24 @@ logger = logging.getLogger(__name__)
 
 class SamlSP(service.Service):
     def __init__(self, environ, start_response, config, cache=None,
-                 outgoing=None, discosrv=None, bindings=None):
+                 outgoing=None, calling_sp_entity_id=None, sp_key=None, discosrv=None, bindings=None):
         service.Service.__init__(self, environ, start_response)
-        self.sp = Base(config, state_cache=cache)
+        self.sp_dict = {}
+        self.sp = None
+        ent_cat = None
+        if sp_key is not None:
+            self.sp = Base(config[sp_key]["config"], state_cache=cache)
+        else:
+            for key in config:
+                tmp_conf = config[key]
+                if calling_sp_entity_id is not None and ent_cat is None:
+                    ent_cat = set(tmp_conf["config"].metadata.entity_categories(calling_sp_entity_id))
+                if set(tmp_conf["config"].entity_category) == ent_cat:
+                    self.sp = Base(tmp_conf["config"], state_cache=cache)
+                    break
+                elif ent_cat is None:
+                    self.sp_dict[key] = Base(tmp_conf["config"], state_cache=cache)
+        #self.sp = Base(config, state_cache=cache)
         self.environ = environ
         self.start_response = start_response
         self.cache = cache
@@ -157,9 +172,8 @@ class SamlSP(service.Service):
             return resp(self.environ, self.start_response)
 
         try:
-            _response = self.sp.parse_authn_request_response(
-                _authn_response["SAMLResponse"], binding,
-                self.cache, decrypt=False)
+            _response = self.sp.parse_authn_request_response(_authn_response["SAMLResponse"], binding, self.cache,
+                                                             decrypt=False)
         except UnknownPrincipal, excp:
             logger.error("UnknownPrincipal: %s" % (excp,))
             resp = ServiceError("UnknownPrincipal: %s" % (excp,))
@@ -185,19 +199,21 @@ class SamlSP(service.Service):
         """
 
         url_map = []
-        for endp, binding in self.sp.config.getattr("endpoints", "sp")[
-                "assertion_consumer_service"]:
-            p = urlparse(endp)
-            url_map.append(("^%s?(.*)$" % p.path[1:], ("SP", "authn_response",
-                                                       BINDING_MAP[binding])))
-            url_map.append(("^%s$" % p.path[1:], ("SP", "authn_response",
-                                                  BINDING_MAP[binding])))
+        for key in self.sp_dict:
+            sp = self.sp_dict[key]
+            for endp, binding in sp.config.getattr("endpoints", "sp")[
+                    "assertion_consumer_service"]:
+                p = urlparse(endp)
+                url_map.append(("^%s?(.*)$" % p.path[1:], ("SP", "authn_response",
+                                                           BINDING_MAP[binding], key)))
+                url_map.append(("^%s$" % p.path[1:], ("SP", "authn_response",
+                                                      BINDING_MAP[binding], key)))
 
-        for endp, binding in self.sp.config.getattr("endpoints", "sp")[
-                "discovery_response"]:
-            p = urlparse(endp)
-            url_map.append(("^%s\?(.*)$" % p.path[1:], ("SP", "disco_response",
-                                                        BINDING_MAP[binding])))
+            for endp, binding in sp.config.getattr("endpoints", "sp")[
+                    "discovery_response"]:
+                p = urlparse(endp)
+                url_map.append(("^%s\?(.*)$" % p.path[1:], ("SP", "disco_response",
+                                                            BINDING_MAP[binding], key)))
 
         return url_map
 

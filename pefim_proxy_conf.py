@@ -25,12 +25,16 @@ BASEDIR = os.path.abspath(os.path.dirname(__file__))
 def full_path(local_file):
     return os.path.join(BASEDIR, local_file)
 
-BASE = pefim_server_conf.ISSUER
+BASE = pefim_server_conf.ISSUER + "%s"
 
 DISCO_SRV = "https://md.nordu.net/role/idp.ds"
 
+#This is the only place you can configure entity categories.
+#The will be an SP generated for each specified release in the RELEASE parameter in the given module.
+ENTITY_CATEGORIES = ["at_egov_pvp2", "swamid"]
+
 CONFIG = {
-    "entityid": "%s/proxy.xml" % BASE,
+    "entityid": "%sproxy.xml" % BASE,
     "description": "A SAML2SAML PEFIM proxy",
     "valid_for": 168,
     "service": {
@@ -47,7 +51,7 @@ CONFIG = {
                     "lifetime": {"minutes": 15},
                     "attribute_restrictions": None,  # means all I have
                     "name_form": NAME_FORMAT_URI,
-                    "entity_categories": ["swamid", "edugain"],
+                    "entity_categories": ENTITY_CATEGORIES,
                     "fail_on_missing_requested": False
                 },
             },
@@ -59,9 +63,9 @@ CONFIG = {
         "sp": {
             "authn_requests_signed": "true",
             "want_response_signed": "true",
-            "required_attributes": ["sn", "givenname", "uid",
-                                    "edupersonaffiliation"],
-            "optional_attributes": ["title"],
+            #"required_attributes": ["sn", "givenname", "uid",
+            #                        "edupersonaffiliation"],
+            #"optional_attributes": ["title"],
             "endpoints": {
                 "assertion_consumer_service": [
                     ("%s/acs/post" % BASE, BINDING_HTTP_POST),

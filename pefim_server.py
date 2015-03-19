@@ -19,6 +19,7 @@ from beaker.middleware import SessionMiddleware
 from mako.lookup import TemplateLookup
 from saml2.s_utils import exception_trace
 from os import path
+from pefimproxy.util.config import get_configurations
 from pefimproxy.util.http import HttpHelper, Session
 from saml2.authn_context import AuthnBroker, authn_context_class_ref, UNSPECIFIED
 
@@ -48,16 +49,12 @@ class WsgiApplication(object):
         config = importlib.import_module(args.config)
         # deal with metadata only once
         _metadata_conf = config.CONFIG["metadata"]
-        config.CONFIG["metadata"] = {}
-        self.config = {
-            "SP": config_factory("sp", args.config),
-            "IDP": config_factory("idp", args.config)}
-        _spc = self.config["SP"]
+        _spc = config_factory("sp", args.config)
         mds = _spc.load_metadata(_metadata_conf)
-    
-        self.config["SP"].metadata = mds
-        self.config["IDP"].metadata = mds
-    
+        idp_conf, sp_confs = get_configurations(args.config, metadata_construction=False, metadata=mds, cache=self.cache)
+        self.config = {
+            "SP": sp_confs,
+            "IDP": idp_conf}
         # If entityID is set it means this is a proxy in front of one IdP
         if args.entityid:
             self.entity_id = args.entityid
@@ -132,8 +129,9 @@ class WsgiApplication(object):
         """
     
         # If I know which IdP to authenticate at return a redirect to it
-
-        inst = SamlSP(environ, start_response, self.config["SP"], self.cache, self.outgoing, **self.sp_args)
+        calling_sp_entity_id = info["authn_req"].issuer.text
+        inst = SamlSP(environ, start_response, self.config["SP"], self.cache, self.outgoing, calling_sp_entity_id,
+                      **self.sp_args)
         if self.entity_id:
             state_key = inst.store_state(info["authn_req"], relay_state,
                                          info["req_args"])
@@ -153,7 +151,7 @@ class WsgiApplication(object):
         """
     
         _idp = SamlIDP(instance.environ, instance.start_response,
-                       self.config["SP"], self.cache, self.outgoing)
+                       self.config["IDP"], self.cache, self.outgoing)
     
         _state = instance.sp.state[response.in_response_to]
         orig_authn_req, relay_state, req_args = instance.sp.state[_state]
@@ -200,13 +198,15 @@ class WsgiApplication(object):
         if isinstance(spec, tuple):
             if spec[0] == "SP":
                 inst = SamlSP(environ, start_response, self.config["SP"], self.cache,
-                              self.outgoing, **self.sp_args)
+                              self.outgoing, sp_key=spec[3], **self.sp_args)
+                param = spec[2:3]
             else:
                 inst = SamlIDP(environ, start_response, self.config["IDP"], self.cache,
                                self.incomming)
+                param = spec[2:]
 
             func = getattr(inst, spec[1])
-            return func(*spec[2:])
+            return func(*param)
         else:
             return spec()
 
@@ -257,8 +257,6 @@ def application(environ, start_response):
     return wsgi_app.run_server(environ, start_response)
 
 if __name__ == '__main__':
-    #This is equal to a main function in other languages. Handles all setup and starts the server.
-
     args = WsgiApplication.arg_parser()
 
     global wsgi_app
