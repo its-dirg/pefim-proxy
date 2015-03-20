@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 #Port for the webserver.
+import os
+
 PORT = 8999
 #True if HTTPS should be used, false is equal to HTTP.
 HTTPS = True
@@ -16,8 +18,10 @@ else:
 #Full URL to the OP server
 ISSUER = "%s:%s" % (BASEURL, PORT)
 
+BASEDIR = os.path.abspath(os.path.dirname(__file__))
+
 #Filename for log.
-LOG_FILE = 'pefim_server.log'
+LOG_FILE = 'tests/pefim_server.log'
 
 #If HTTPS is true you have to assign the server cert, key and certificate chain.
 SERVER_CERT = "httpsCert/localhost.crt"

@@ -86,8 +86,8 @@ CONFIG = {
     "cert_file": full_path("proxy_cert/new_server.crt"),
     "metadata": {
         #"mdfile": ["swamid2.md"],
-        "local": [BASEDIR + "/src/test/external_config_test_sp.xml",
-                  BASEDIR + "/src/test/external_config_test_idp.xml"]
+        "local": [BASEDIR + "/tests/external/pvp2_config_test_sp.xml",
+                  BASEDIR + "/tests/external/at_egov_pvp2_config_test_idp.xml"]
     },
     "organization": {
         "display_name": "Test Testsson",
