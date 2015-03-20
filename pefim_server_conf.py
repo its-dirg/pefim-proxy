@@ -34,3 +34,8 @@ SESSION_OPTS = {
     'session.auto': True,
     #'session.timeout' : 900 #Never expires only when the session is closed.
 }
+
+#Database with the underlying IDP's name_id as key and the proxy generated name_id as value.
+NAME_ID_ORG_NEW = {}
+#Database with the underlying IDP's name_id as value and the proxy generated name_id as key.
+NAME_ID_NEW_ORG = {}

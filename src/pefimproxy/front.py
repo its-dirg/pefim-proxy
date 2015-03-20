@@ -15,7 +15,7 @@ import service
 logger = logging.getLogger(__name__)
 
 class SamlIDP(service.Service):
-    def __init__(self, environ, start_response, conf, cache, incomming):
+    def __init__(self, environ, start_response, conf, cache, incomming, name_id_org_new, name_ide_new_org):
         """
         Constructor for the class.
         :param environ: WSGI environ
@@ -27,6 +27,8 @@ class SamlIDP(service.Service):
         self.response_bindings = None
         self.idp = Server(config=conf, cache=cache)
         self.incomming = incomming
+        self.name_id_org_new = name_id_org_new
+        self.name_ide_new_org = name_ide_new_org
 
     def verify_request(self, query, binding):
         """ Parses and verifies the SAML Authentication Request
@@ -123,6 +125,12 @@ class SamlIDP(service.Service):
             return self.incomming(_dict, self, self.environ,
                                   self.start_response, _request["RelayState"])
 
+    def save_nameid(self, org_resp, new_resp):
+        org_name_id = org_resp.assertion.subject.name_id.text
+        new_name_id = new_resp.assertion.subject.name_id.text
+        self.name_id_org_new[org_name_id] = new_name_id
+        self.name_ide_new_org[new_name_id] = org_name_id
+
     def construct_authn_response(self, identity, userid, authn, resp_args,
                                  relay_state, name_id=None, sign_response=True, org_resp=None, org_xml_response=None):
         """
@@ -139,8 +147,7 @@ class SamlIDP(service.Service):
                                                authn=authn,
                                                sign_response=False,
                                                **resp_args)
-
-        #TODO GET NAME_ID FROM org_resp.response.assertion and save to a db.
+        self.save_nameid(org_resp, _resp)
         advice = None
         for tmp_assertion in org_resp.response.assertion:
             if tmp_assertion.advice is not None:

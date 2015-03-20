@@ -59,8 +59,18 @@ class WsgiApplication(object, ):
         sp = SamlSP(None, None, self.config["SP"], self.cache)
         self.urls.extend(sp.register_endpoints())
 
-        self.idp = SamlIDP(None, None, self.config["IDP"], self.cache, None)
+        self.name_id_org_new = server_conf.NAME_ID_ORG_NEW
+        self.name_ide_new_org = server_conf.NAME_ID_NEW_ORG
+
+        self.idp = SamlIDP(None, None, self.config["IDP"], self.cache, None,
+                           self.name_id_org_new, self.name_ide_new_org)
         self.urls.extend(self.idp.register_endpoints())
+
+    def get_name_id_org(self, name_id_new):
+        return self.name_ide_new_org[name_id_new]
+
+    def get_name_id_new(self, name_id_org):
+        return self.name_id_org_new[name_id_org]
 
     @staticmethod
     def css(environ, start_response):
@@ -146,7 +156,7 @@ class WsgiApplication(object, ):
         """
 
         _idp = SamlIDP(instance.environ, instance.start_response,
-                       self.config["IDP"], self.cache, self.outgoing)
+                       self.config["IDP"], self.cache, self.outgoing, self.name_id_org_new, self.name_ide_new_org)
 
         _state = instance.sp.state[response.in_response_to]
         orig_authn_req, relay_state, req_args = instance.sp.state[_state]
@@ -197,7 +207,7 @@ class WsgiApplication(object, ):
                 param = spec[2:3]
             else:
                 inst = SamlIDP(environ, start_response, self.config["IDP"], self.cache,
-                               self.incomming)
+                               self.incomming, self.name_id_org_new, self.name_ide_new_org)
                 param = spec[2:]
 
             func = getattr(inst, spec[1])

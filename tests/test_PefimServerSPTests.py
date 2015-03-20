@@ -55,4 +55,7 @@ class PefimServerSPTests(helper.CPWebCase):
         self.assertStatus('200 OK')
         self.assertTrue('http://test.sp.se:8900/acs/post' == action, "Must be designated for the right SP!")
         resp = test_sp.eval_authn_response(body["SAMLResponse"])
+        new_name_id = resp.assertion.subject.name_id.text
+        org_name_id = self.WSGI_APP.get_name_id_org(new_name_id)
+        self.assertTrue(new_name_id == self.WSGI_APP.get_name_id_new(org_name_id))
         self.assertTrue(test_idp.simple_verify_authn_response_ava(resp.ava, "testuser1"))
