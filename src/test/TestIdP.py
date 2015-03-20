@@ -1,4 +1,6 @@
 import urllib
+import os
+from saml2.config import Config
 from saml2.sigver import encrypt_cert_from_item
 from test.TestHelper import get_post_action_body
 from saml2.authn_context import AuthnBroker, authn_context_class_ref
@@ -61,13 +63,53 @@ class TestIdP(object):
             "labeledURL": "http://www.example.com/haho My homepage",
             "norEduPersonNIN": "SE199012315555"
         },
-
+        "testuser3": {
+            "sn": "Testsson",
+            "givenName": "Test",
+            "eduPersonAffiliation": "student",
+            "eduPersonScopedAffiliation": "student@example.com",
+            "eduPersonPrincipalName": "test@example.com",
+            "uid": "testuser1",
+            "eduPersonTargetedID": "one!for!all",
+            "c": "SE",
+            "o": "Example Co.",
+            "ou": "IT",
+            "initials": "P",
+            "schacHomeOrganization": "example.com",
+            "email": "hans@example.com",
+            "displayName": "Test Testsson",
+            "labeledURL": "http://www.example.com/haho My homepage",
+            "norEduPersonNIN": "SE199012315555",
+            "PVP-VERSION": "PVP-VERSION",
+            "PVP-PRINCIPAL-NAME": "PVP-PRINCIPAL-NAME",
+            "PVP-GIVENNAME": "PVP-GIVENNAME",
+            "PVP-BIRTHDATE": "PVP-BIRTHDATE",
+            "PVP-USERID": "PVP-USERID",
+            "PVP-GID": "PVP-GID",
+            "PVP-BPK": "PVP-BPK",
+            "PVP-MAIL": "PVP-MAIL",
+            "PVP-TEL": "PVP-TEL",
+            "PVP-PARTICIPANT-ID": "PVP-PARTICIPANT-ID",
+            "PVP-PARTICIPANT-OKZ": "PVP-PARTICIPANT-OKZ",
+            "PVP-OU-OKZ": "PVP-OU-OKZ",
+            "PVP-OU": "PVP-OU",
+            "PVP-OU-GV-OU-ID": "PVP-OU-GV-OU-ID",
+            "PVP-FUNCTION": "PVP-FUNCTION",
+            "PVP-ROLES": "PVP-ROLES",
+            "PVP-INVOICE-RECPT-ID": "PVP-INVOICE-RECPT-ID",
+            "PVP-COST-CENTER-ID": "PVP-COST-CENTER-ID",
+            "PVP-CHARGE-CODE": "PVP-CHARGE-CODE",
+        },
     }
 
-    def __init__(self, conf_name=None):
-        if conf_name is None:
-            conf_name = "/Users/haho0032/Develop/github/pefim-proxy/src/test/external_config_test_idp"
-        self.idp = server.Server(conf_name, cache=Cache())
+    def __init__(self, base_dir, conf_name=None, config=None):
+        if config is not None:
+            _conf = Config().load(config, metadata_construction=True)
+            self.idp = server.Server(config=_conf, cache=Cache())
+        else:
+            if conf_name is None:
+                conf_name = base_dir + "/external/at_egov_pvp2_config_test_idp"
+            self.idp = server.Server(conf_name, cache=Cache())
         self.idp.ticket = {}
         self.authn_req = None
         self.binding_out = None
@@ -108,16 +150,8 @@ class TestIdP(object):
         action, body = get_post_action_body(http_args["data"][3])
         return action, urllib.urlencode(body)
 
-    def verify_authn_response_ava(self, ava, userid):
+    def simple_verify_authn_response_ava(self, ava, userid):
         data = TestIdP.USERS[userid]
-        if ava is None or "PVP-VERSION" not in ava:
+        if ava is None or len(ava) == 0:
             return False
-        for key in ava:
-            if key not in data:
-                return False
-            value = ava[key]
-            if isinstance(value, list):
-                value = value[0]
-            if data[key] != value:
-                return False
         return True

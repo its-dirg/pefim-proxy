@@ -1,3 +1,5 @@
+import copy
+from importlib import import_module
 import urllib
 from urlparse import parse_qs
 import re
@@ -45,3 +47,15 @@ def get_post_action_body(form):
             count+=1
         body = {"SAMLResponse": saml_response, "RelayState": relay_state}
         return action, body
+
+
+def get_config(config_file):
+    if config_file.endswith(".py"):
+            config_file = config_file[:-3]
+    conf = None
+    try:
+        import_module('..' + config_file, 'test')
+        conf = __import__(config_file)
+    except:
+        pass
+    return conf.CONFIG

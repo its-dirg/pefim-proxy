@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<ns0:EntityDescriptor xmlns:ns0="urn:oasis:names:tc:SAML:2.0:metadata" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ns1="urn:oasis:names:tc:SAML:metadata:attribute" xmlns:ns2="urn:oasis:names:tc:SAML:2.0:assertion" xmlns:ns4="urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol" xmlns:ns5="http://www.w3.org/2000/09/xmldsig#" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" entityID="http://test.sp.se/pvp2charge_sp.xml"><ns0:Extensions><ns1:EntityAttributes><ns2:Attribute Name="http://macedir.org/entity-category" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri"><ns2:AttributeValue xsi:type="xs:string">http://www.ref.gv.at/ns/names/agiz/pvp/egovtoken-charge</ns2:AttributeValue></ns2:Attribute></ns1:EntityAttributes></ns0:Extensions><ns0:SPSSODescriptor AuthnRequestsSigned="true" WantAssertionsSigned="false" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol"><ns0:Extensions><ns4:DiscoveryResponse Binding="urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol" Location="http://test.sp.se:8900/disco" index="1" /></ns0:Extensions><ns0:KeyDescriptor use="encryption"><ns5:KeyInfo><ns5:X509Data><ns5:X509Certificate>MIICIzCCAYwCAXcwDQYJKoZIhvcNAQELBQAwWjELMAkGA1UEBhMCc2UxCzAJBgNV
+BAgTAmFjMQ0wCwYDVQQHEwRVbWVhMQwwCgYDVQQKEwNJVFMxDTALBgNVBAsTBERJ
+UkcxEjAQBgNVBAMTCWxvY2FsaG9zdDAeFw0xNDAzMTkxNzE5MzlaFw0yNDAzMTYx
+NzE5MzlaMFoxCzAJBgNVBAYTAnNlMQswCQYDVQQIEwJhYzENMAsGA1UEBxMEVW1l
+YTEMMAoGA1UEChMDSVRTMQ0wCwYDVQQLEwRESVJHMRIwEAYDVQQDEwlsb2NhbGhv
+c3QwgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBALswQbMz6dKL4FEKu+O3GYDf
+aniyxcfizsHaiehuh5jufrlGZw/zMMttteTRhpjtTFN2/R68d1kh8pmO+HV7u+53
+h+C33I178ZsOquSovGe1AWmzDzp2j6CRdQYdZaMCc4YxtwEXs7570YmnPLKhz8aH
+diQRHhtx1cqdPPStkz67AgMBAAEwDQYJKoZIhvcNAQELBQADgYEApQ5znEdhsJBs
++ew81X9pkUKZ/ruu/p2OPfYmKzdFnK6mq9bF5CEIaIkvbSJjpECicmGCNw9ATJXy
+lnwFLnfxw6d+YGi4XPuo64NSG00ycnMSTMJ8OR5ForcF89v72BLRDYo6yXeNDw72
+2ul0lPzH54CNQzsm4N/5w5iStnOT1TQ=
+</ns5:X509Certificate></ns5:X509Data></ns5:KeyInfo></ns0:KeyDescriptor><ns0:KeyDescriptor use="signing"><ns5:KeyInfo><ns5:X509Data><ns5:X509Certificate>MIICIzCCAYwCAXcwDQYJKoZIhvcNAQELBQAwWjELMAkGA1UEBhMCc2UxCzAJBgNV
+BAgTAmFjMQ0wCwYDVQQHEwRVbWVhMQwwCgYDVQQKEwNJVFMxDTALBgNVBAsTBERJ
+UkcxEjAQBgNVBAMTCWxvY2FsaG9zdDAeFw0xNDAzMTkxNzE5MzlaFw0yNDAzMTYx
+NzE5MzlaMFoxCzAJBgNVBAYTAnNlMQswCQYDVQQIEwJhYzENMAsGA1UEBxMEVW1l
+YTEMMAoGA1UEChMDSVRTMQ0wCwYDVQQLEwRESVJHMRIwEAYDVQQDEwlsb2NhbGhv
+c3QwgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBALswQbMz6dKL4FEKu+O3GYDf
+aniyxcfizsHaiehuh5jufrlGZw/zMMttteTRhpjtTFN2/R68d1kh8pmO+HV7u+53
+h+C33I178ZsOquSovGe1AWmzDzp2j6CRdQYdZaMCc4YxtwEXs7570YmnPLKhz8aH
+diQRHhtx1cqdPPStkz67AgMBAAEwDQYJKoZIhvcNAQELBQADgYEApQ5znEdhsJBs
++ew81X9pkUKZ/ruu/p2OPfYmKzdFnK6mq9bF5CEIaIkvbSJjpECicmGCNw9ATJXy
+lnwFLnfxw6d+YGi4XPuo64NSG00ycnMSTMJ8OR5ForcF89v72BLRDYo6yXeNDw72
+2ul0lPzH54CNQzsm4N/5w5iStnOT1TQ=
+</ns5:X509Certificate></ns5:X509Data></ns5:KeyInfo></ns0:KeyDescriptor><ns0:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="http://test.sp.se:8900/slo" /><ns0:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="http://test.sp.se:8900/acs/redirect" index="1" /><ns0:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="http://test.sp.se:8900/acs/post" index="2" /><ns0:AttributeConsumingService index="1"><ns0:ServiceName xml:lang="en" /><ns0:ServiceDescription xml:lang="en">PEFIM test SP</ns0:ServiceDescription><ns0:RequestedAttribute FriendlyName="pvp-version" Name="urn:oid:1.2.40.0.10.2.1.1.261.10" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" isRequired="true" /><ns0:RequestedAttribute FriendlyName="pvp-principal-name" Name="urn:oid:1.2.40.0.10.2.1.1.261.20" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" isRequired="true" /><ns0:RequestedAttribute FriendlyName="pvp-givenname" Name="urn:oid:2.5.4.42" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" isRequired="false" /><ns0:RequestedAttribute FriendlyName="pvp-birthdate" Name="urn:oid:1.2.40.0.10.2.1.1.55" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" isRequired="false" /><ns0:RequestedAttribute FriendlyName="pvp-userid" Name="urn:oid:0.9.2342.19200300.100.1.1" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" isRequired="false" /></ns0:AttributeConsumingService></ns0:SPSSODescriptor><ns0:Organization><ns0:OrganizationName xml:lang="en">KuK Servus</ns0:OrganizationName><ns0:OrganizationDisplayName xml:lang="de">KuK Servus</ns0:OrganizationDisplayName><ns0:OrganizationDisplayName xml:lang="en">KuK Servus</ns0:OrganizationDisplayName><ns0:OrganizationURL xml:lang="en">http://test.sp.se</ns0:OrganizationURL></ns0:Organization><ns0:ContactPerson contactType="technical"><ns0:GivenName>Rainer</ns0:GivenName><ns0:SurName>Hoerbe</ns0:SurName><ns0:EmailAddress>rh_testfed_pv_at@mail.hoerbe.at</ns0:EmailAddress><ns0:TelephoneNumber>+43 1 100 0000</ns0:TelephoneNumber></ns0:ContactPerson><ns0:ContactPerson contactType="support"><ns0:GivenName>Support</ns0:GivenName><ns0:EmailAddress>support@example.com</ns0:EmailAddress></ns0:ContactPerson></ns0:EntityDescriptor>

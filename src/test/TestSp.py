@@ -1,5 +1,7 @@
 import uuid
 from saml2.cert import OpenSSLWrapper
+from saml2.client_base import Base
+from saml2.config import Config
 from saml2.extension.pefim import SPCertEnc
 from saml2.s_utils import rndstr, sid
 
@@ -12,14 +14,16 @@ from saml2.md import Extensions
 import xmldsig
 import os
 
-BASEDIR = os.path.abspath(os.path.dirname(__file__))
-
 
 class TestSp(object):
-    def __init__(self, conf_name=None):
-        if conf_name is None:
-            conf_name = BASEDIR + "/external_config_test_sp"
-        self.sp = Saml2Client(config_file="%s" % conf_name)
+    def __init__(self, base_dir, conf_name=None, config=None):
+        if config is not None:
+            _conf = Config().load(config, metadata_construction=True)
+            self.sp = Saml2Client(config=_conf, state_cache={})
+        else:
+            if conf_name is None:
+                conf_name = base_dir + "/external/pvp2_config_test_sp"
+            self.sp = Saml2Client(config_file="%s" % conf_name, state_cache={})
         self.bindings = [BINDING_HTTP_REDIRECT, BINDING_HTTP_POST, BINDING_HTTP_ARTIFACT]
         self.rstate = None
         self.msg_str = None
@@ -30,9 +34,9 @@ class TestSp(object):
         self.cert_key_str = None
         self.outstanding_certs = {}
         self.outstanding_queries = {}
+        self.base_dir = base_dir
 
-    @staticmethod
-    def generate_cert():
+    def generate_cert(self):
         sn = uuid.uuid4().urn
         cert_info = {
             "cn": "localhost",
@@ -43,8 +47,8 @@ class TestSp(object):
             "organization_unit": "DIRG"
         }
         osw = OpenSSLWrapper()
-        ca_cert_str = osw.read_str_from_file(BASEDIR + "/root_cert/localhost.ca.crt")
-        ca_key_str = osw.read_str_from_file(BASEDIR + "/root_cert/localhost.ca.key")
+        ca_cert_str = osw.read_str_from_file(self.base_dir + "/root_cert/localhost.ca.crt")
+        ca_key_str = osw.read_str_from_file(self.base_dir + "/root_cert/localhost.ca.key")
         req_cert_str, req_key_str = osw.create_certificate(cert_info, request=True, sn=sn, key_length=2048)
         cert_str = osw.create_cert_signed_certificate(ca_cert_str, ca_key_str, req_cert_str)
         return cert_str, req_key_str

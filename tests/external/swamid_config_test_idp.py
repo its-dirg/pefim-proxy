@@ -25,7 +25,7 @@ BASEDIR = os.path.abspath(os.path.dirname(__file__))
 
 def verify_encrypt_cert(cert_str):
     osw = OpenSSLWrapper()
-    ca_cert_str = osw.read_str_from_file(BASEDIR + "/root_cert/localhost.ca.crt")
+    ca_cert_str = osw.read_str_from_file(BASEDIR + "/../root_cert/localhost.ca.crt")
     valid, mess = osw.verify(ca_cert_str, cert_str)
     return valid
 
@@ -101,7 +101,7 @@ CONFIG = {
                     "lifetime": {"minutes": 15},
                     #"attribute_restrictions": None, # means all I have
                     "name_form": NAME_FORMAT_URI,
-                    "entity_categories": ["at_egov_pvp2"]
+                    "entity_categories": ["swamid"]
                 },
             },
             "subject_data": "./idp.subject",
@@ -110,10 +110,10 @@ CONFIG = {
         },
     },
     "debug": 1,
-    "key_file": full_path(BASEDIR + "/keys/mykey.pem"),
-    "cert_file": full_path(BASEDIR + "/keys/mycert.pem"),
+    "key_file": full_path(BASEDIR + "/../keys/mykey.pem"),
+    "cert_file": full_path(BASEDIR + "/../keys/mycert.pem"),
     "metadata": {
-        "local": [BASEDIR + "/../../pefim_proxy_conf.xml"],
+        "local": [BASEDIR + "/../pefim_proxy_conf_local.xml"],
     },
     "organization": {
         "display_name": "Test IdP",

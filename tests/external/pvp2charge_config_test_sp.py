@@ -5,7 +5,7 @@ from saml2 import BINDING_HTTP_REDIRECT
 from saml2.cert import OpenSSLWrapper
 from saml2.extension.idpdisc import BINDING_DISCO
 from saml2.saml import NAME_FORMAT_URI
-from saml2.entity_category.at_egov_pvp2 import PVP2
+from saml2.entity_category.at_egov_pvp2 import PVP2, PVP2CHARGE
 
 try:
     from saml2.sigver import get_xmlsec_binary
@@ -29,9 +29,9 @@ def generate_cert():
     pass
 
 CONFIG = {
-    "entityid": "http://test.sp.se/sp.xml",
+    "entityid": "http://test.sp.se/pvp2charge_sp.xml",
     "description": "PEFIM test SP",
-    "entity_category": [PVP2],
+    "entity_category": [PVP2CHARGE],
     #Here you configure the method to be used for generating certificates.
     "generate_cert_func": generate_cert,
     "service": {
@@ -62,11 +62,11 @@ CONFIG = {
     },
     "debug": 1,
     #You must change this to your files!
-    "key_file": BASEDIR + "/keys/mykey.pem",
-    "cert_file": BASEDIR + "/keys/mycert.pem",
+    "key_file": BASEDIR + "/../keys/mykey.pem",
+    "cert_file": BASEDIR + "/../keys/mycert.pem",
     #"attribute_map_dir": "./attributemaps",
     "metadata": {
-        "local": [BASEDIR + "/../../pefim_proxy_conf.xml"],
+        "local": [BASEDIR + "/../pefim_proxy_conf_local.xml"],
     },
     # -- below used by make_metadata --
     "organization": {
