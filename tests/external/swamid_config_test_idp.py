@@ -42,7 +42,7 @@ BASE = "http://%s:%s" % (HOST, PORT)
 CONFIG = {
     "entityid": "%s/TestIdP.xml" % BASE,
     "description": "Test IDP",
-    "valid_for": 168,
+    "valid_for": 9999999,
     "service": {
         "aa": {
             "endpoints": {
