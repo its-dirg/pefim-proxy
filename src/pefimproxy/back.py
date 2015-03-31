@@ -57,7 +57,7 @@ class SamlSP(service.Service):
         self.environ = environ
         self.start_response = start_response
         self.cache = cache
-        self.idp_query_param = "IdpQuery"
+        self.idp_query_param = "entityID"
         self.outgoing = outgoing
         self.discosrv = discosrv
         if bindings:
@@ -87,7 +87,7 @@ class SamlSP(service.Service):
     def store_state(self, authn_req, relay_state, req_args):
         # Which page was accessed to get here
         came_from = geturl(self.environ)
-        key = hash(came_from+self.environ["REMOTE_ADDR"]+str(time.time()))
+        key = "%i" % hash(came_from+self.environ["REMOTE_ADDR"]+str(time.time()))
         logger.debug("[sp.challenge] RelayState >> '%s'" % came_from)
         self.cache[key] = (authn_req, relay_state, req_args)
         return key
@@ -113,7 +113,8 @@ class SamlSP(service.Service):
         # append it to the disco server URL
         ret += "?state=%s" % state_key
         loc = _cli.create_discovery_service_request(self.discosrv, eid,
-                                                    **{"return": ret})
+                                                    **{"return": ret,
+                                                       "returnIDParam": self.idp_query_param})
 
         return SeeOther(loc)
 
@@ -219,8 +220,8 @@ class SamlSP(service.Service):
             for endp, binding in sp.config.getattr("endpoints", "sp")[
                     "discovery_response"]:
                 p = urlparse(endp)
-                url_map.append(("^%s\?(.*)$" % p.path[1:], ("SP", "disco_response",
-                                                            BINDING_MAP[binding], key)))
+                #url_map.append(("^%s\?(.*)$" % p.path[1:], ("SP", "disco_response", BINDING_MAP[binding], key)))
+                url_map.append(("^%s(.*)$" % p.path[1:], ("SP", "disco_response", BINDING_MAP[binding], key)))
 
         return url_map
 
