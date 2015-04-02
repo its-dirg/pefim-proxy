@@ -9,7 +9,7 @@ from pefimproxy.server import WsgiApplication
 def application(environ, start_response):
     return wsgi_app.run_server(environ, start_response)
 
-if __name__ == '__main__':
+def main():
     sys.path.insert(0, os.getcwd())
 
     args = WsgiApplication.arg_parser()
@@ -17,7 +17,7 @@ if __name__ == '__main__':
     pefim_server_conf = __import__(args.server_config)
 
     global wsgi_app
-    wsgi_app = WsgiApplication(args, base_dir=path.dirname(path.realpath(__file__)) + "/")
+    wsgi_app = WsgiApplication(args, base_dir=os.getcwd() + "/")
 
     global SRV
     SRV = wsgiserver.CherryPyWSGIServer(('0.0.0.0', pefim_server_conf.PORT), SessionMiddleware(
@@ -34,3 +34,6 @@ if __name__ == '__main__':
         SRV.start()
     except KeyboardInterrupt:
         SRV.stop()
+
+if __name__ == '__main__':
+    main()

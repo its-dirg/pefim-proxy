@@ -38,6 +38,10 @@ class WsgiApplication(object, ):
         self.urls = [(r'.+\.css$', WsgiApplication.css), ]
         self.sp_args = None
         self.base_dir = base_dir
+        if os.path.isdir(self.base_dir + "/static"):
+            self.static_dir = self.base_dir
+        else:
+            self.static_dir = "/opt/pefimproxy/"
         self.logger = WsgiApplication.create_logger(server_conf.LOG_FILE, self.base_dir)
         # read the configuration file
         config = importlib.import_module(args.config)
@@ -245,7 +249,9 @@ class WsgiApplication(object, ):
                     break
 
             try:
-                return HttpHelper.handle_static(path, self.base_dir, start_response, self.logger)
+                print path
+                print self.static_dir
+                return HttpHelper.handle_static(path, self.static_dir, start_response, self.logger)
             except Exception, excp:
                 pass
 
