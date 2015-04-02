@@ -14,10 +14,10 @@ class AliveTestCase(helper.CPWebCase):
 
     ARGS = Namespace(debug=False,
                      entityid=None,
-                     config="pefim_proxy_conf_local")
+                     config="pefim_proxy_conf_local",
+                     server_config="pefim_server_conf_local")
 
-    WSGI_APP = WsgiApplication(pefim_server_conf_local, ARGS, base_dir=path.dirname(path.realpath(__file__)) +
-                                                                       "/../")
+    WSGI_APP = WsgiApplication(ARGS, base_dir=path.dirname(path.realpath(__file__)) + "/../")
 
     @staticmethod
     def application(environ, start_response):

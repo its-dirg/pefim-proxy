@@ -5,6 +5,7 @@ from uuid import uuid4
 import importlib
 import sys
 from os import path
+import os
 
 from saml2.config import config_factory
 from saml2.httputil import NotFound, ServiceError
@@ -30,14 +31,15 @@ class start_response_intercept(object):
 
 
 class WsgiApplication(object, ):
-    def __init__(self, server_conf, args, base_dir):
+    def __init__(self, args, base_dir):
+        sys.path.insert(0, os.getcwd())
+        server_conf = importlib.import_module(args.server_config)
         self.cache = {}
         self.urls = [(r'.+\.css$', WsgiApplication.css), ]
         self.sp_args = None
         self.base_dir = base_dir
         self.logger = WsgiApplication.create_logger(server_conf.LOG_FILE, self.base_dir)
         # read the configuration file
-        sys.path.insert(0, ".")
         config = importlib.import_module(args.config)
         # deal with metadata only once
         _metadata_conf = config.CONFIG["metadata"]
@@ -89,6 +91,7 @@ class WsgiApplication(object, ):
         parser.add_argument('-d', dest='debug', action='store_true')
         parser.add_argument('-e', dest="entityid")
         parser.add_argument(dest="config")
+        parser.add_argument(dest="server_config")
         args = parser.parse_args()
         return args
 

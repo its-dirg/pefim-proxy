@@ -2,7 +2,7 @@ import urllib
 import os
 from saml2.config import Config
 from saml2.sigver import encrypt_cert_from_item
-from test.TestHelper import get_post_action_body
+from TestHelper import get_post_action_body
 from saml2.authn_context import AuthnBroker, authn_context_class_ref
 from saml2.authn_context import PASSWORD
 

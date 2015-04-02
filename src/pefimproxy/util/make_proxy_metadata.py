@@ -1,19 +1,16 @@
 #!/usr/bin/env python
-import argparse
-from saml2.config import config_factory, Config
-from saml2.metadata import create_metadata_string, entity_descriptor, entities_descriptor
-from saml2.sigver import make_temp, security_context
-from saml2.validate import valid_instance
-from pefimproxy.util.config import get_configurations
-from saml2.server import Server
 
 __author__ = 'haho0032'
 
 
-
-
-
-if __name__ == '__main__':
+def main():
+    import argparse
+    import os, sys
+    from saml2.config import config_factory, Config
+    from saml2.metadata import create_metadata_string, entity_descriptor, entities_descriptor
+    from saml2.sigver import make_temp, security_context
+    from saml2.validate import valid_instance
+    from pefimproxy.util.config import get_configurations
 
     parser = argparse.ArgumentParser()
     parser.add_argument('-v', dest='valid', default="4",
@@ -40,6 +37,8 @@ if __name__ == '__main__':
         # translate into hours
         valid_for = int(args.valid) * 24
 
+    print os.getcwd()
+    sys.path.insert(0, os.getcwd())
     idp_conf, sp_confs = get_configurations(args.config)
 
     eds = []
@@ -68,3 +67,5 @@ if __name__ == '__main__':
     valid_instance(desc)
     print desc.to_string(nspair)
 
+if __name__ == '__main__':
+    main()

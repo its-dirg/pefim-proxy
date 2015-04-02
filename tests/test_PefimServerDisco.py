@@ -1,4 +1,4 @@
-from test.TestHelper import get_url_dict
+from _util.TestHelper import get_url_dict
 
 __author__ = 'haho0032'
 
@@ -9,7 +9,7 @@ from beaker.middleware import SessionMiddleware
 from pefimproxy.server import WsgiApplication
 from argparse import Namespace
 from os import path
-from test.TestSp import TestSp
+from _util.TestSp import TestSp
 import urllib
 import re
 
@@ -17,9 +17,10 @@ class DiscoTestCase(helper.CPWebCase):
     BASEDIR = path.abspath(path.dirname(__file__))
     ARGS = Namespace(debug=False,
                      entityid=None,
-                     config="pefim_proxy_conf_local")
+                     config="pefim_proxy_conf_local",
+                     server_config="pefim_server_conf_local")
 
-    WSGI_APP = WsgiApplication(pefim_server_conf_local, ARGS, base_dir=path.dirname(path.realpath(__file__)) +
+    WSGI_APP = WsgiApplication(ARGS, base_dir=path.dirname(path.realpath(__file__)) +
                                                                        "/../")
 
     @staticmethod

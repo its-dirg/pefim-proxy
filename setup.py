@@ -14,6 +14,8 @@ setup(
         "License :: OSI Approved :: Apache Software License",
         "Topic :: Software Development :: Libraries :: Python Modules"],
     install_requires=["cherrypy==3.2.4"],
-
+    entry_points={
+        'console_scripts': ['make_proxy_metadata=pefimproxy.util.make_proxy_metadata:main'],
+    },
     zip_safe=False,
 )

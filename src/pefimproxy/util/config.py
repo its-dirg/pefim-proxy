@@ -9,7 +9,7 @@ def get_configurations(config_file, metadata_construction=True, metadata=None, c
             config_file = config_file[:-3]
     conf = None
     try:
-        conf = __import__(config_file)
+        conf = __import__(config_file, level=-1)
     except:
         pass
     assert conf, "No configuration/invalid file with the name: %s" % config_file

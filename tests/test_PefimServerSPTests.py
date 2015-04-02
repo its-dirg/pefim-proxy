@@ -1,4 +1,4 @@
-from test.TestSp import TestSp
+from _util.TestSp import TestSp
 
 __author__ = 'haho0032'
 
@@ -11,8 +11,8 @@ from cherrypy.test import helper
 from beaker.middleware import SessionMiddleware
 from argparse import Namespace
 
-from test.TestHelper import create_cookie_header, get_url_dict, get_post_action_body
-from test.TestIdP import TestIdP
+from _util.TestHelper import create_cookie_header, get_url_dict, get_post_action_body
+from _util.TestIdP import TestIdP
 import pefim_server_conf_local
 from pefimproxy.server import WsgiApplication
 
@@ -21,10 +21,10 @@ class PefimServerSPTests(helper.CPWebCase):
     BASEDIR = os.path.abspath(os.path.dirname(__file__))
     ARGS = Namespace(debug=False,
                      entityid="http://test.idp.se:1111/TestIdP.xml",
-                     config="pefim_proxy_conf_local")
+                     config="pefim_proxy_conf_local",
+                     server_config="pefim_server_conf_local")
 
-    WSGI_APP = WsgiApplication(pefim_server_conf_local, ARGS,
-                               base_dir=path.dirname(path.realpath(__file__)) + "/../")
+    WSGI_APP = WsgiApplication(ARGS, base_dir=path.dirname(path.realpath(__file__)) + "/../")
 
     @staticmethod
     def application(environ, start_response):
