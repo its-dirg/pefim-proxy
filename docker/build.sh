@@ -1,3 +1,3 @@
 #!/bin/sh
-docker -f rmi pefim_proxy
+docker rmi -f pefim_proxy
 docker build -t pefim_proxy .

@@ -1,2 +1,3 @@
 git+https://github.com/rohe/pysaml2.git#egg=pysaml2
 cherrypy==3.2.4
+beaker

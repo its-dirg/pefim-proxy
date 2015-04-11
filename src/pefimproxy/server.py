@@ -249,8 +249,6 @@ class WsgiApplication(object, ):
                     break
 
             try:
-                print path
-                print self.static_dir
                 return HttpHelper.handle_static(path, self.static_dir, start_response, self.logger)
             except Exception, excp:
                 pass

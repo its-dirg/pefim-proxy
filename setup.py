@@ -13,7 +13,7 @@ setup(
     classifiers=["Development Status :: 0.1 - Beta",
                  "License :: OSI Approved :: Apache Software License",
                  "Topic :: Software Development :: Libraries :: Python Modules"],
-    install_requires=["cherrypy==3.2.4"],
+    install_requires=["cherrypy==3.2.4", "beaker"],
     entry_points={
         'console_scripts': ['make_proxy_metadata=pefimproxy.util.make_proxy_metadata:main',
                             'pefim_server=pefimproxy.pefim_server:main'],

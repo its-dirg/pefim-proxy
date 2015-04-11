@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<ns0:EntityDescriptor xmlns:ns0="urn:oasis:names:tc:SAML:2.0:metadata" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ns1="urn:oasis:names:tc:SAML:metadata:attribute" xmlns:ns2="urn:oasis:names:tc:SAML:2.0:assertion" xmlns:ns4="urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol" xmlns:ns5="http://www.w3.org/2000/09/xmldsig#" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" entityID="http://localhost:8087/sp.xml"><ns0:Extensions><ns1:EntityAttributes><ns2:Attribute Name="http://macedir.org/entity-category" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri"><ns2:AttributeValue xsi:type="xs:string">http://www.ref.gv.at/ns/names/agiz/pvp/egovtoken</ns2:AttributeValue></ns2:Attribute></ns1:EntityAttributes></ns0:Extensions><ns0:SPSSODescriptor AuthnRequestsSigned="true" WantAssertionsSigned="false" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol"><ns0:Extensions><ns4:DiscoveryResponse Binding="urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol" Location="http://localhost:8087/disco" index="1" /></ns0:Extensions><ns0:KeyDescriptor use="encryption"><ns5:KeyInfo><ns5:X509Data><ns5:X509Certificate>MIICSTCCAbICAQEwDQYJKoZIhvcNAQELBQAwbTELMAkGA1UEBhMCc2UxCzAJBgNV
+BAgTAmFjMQ0wCwYDVQQHEwR1bWVhMRwwGgYDVQQKExNJVFMgVW1lYSBVbml2ZXJz
+aXR5MQ0wCwYDVQQLEwRESVJHMRUwEwYDVQQDEwxsb2NhbGhvc3QuY2EwHhcNMTQw
+MzE3MTY0MjM5WhcNMjQwMzE0MTY0MjM5WjBtMQswCQYDVQQGEwJzZTELMAkGA1UE
+CBMCYWMxDTALBgNVBAcTBHVtZWExHDAaBgNVBAoTE0lUUyBVbWVhIFVuaXZlcnNp
+dHkxDTALBgNVBAsTBERJUkcxFTATBgNVBAMTDGxvY2FsaG9zdC5jYTCBnzANBgkq
+hkiG9w0BAQEFAAOBjQAwgYkCgYEA0+e/ncbbFMpsYc7Pb5wub2Q0jBpaaae3ZklR
+8QNLgQnja6kkKseRR3oOBioo9e7qZbN1N6E2mIye/pMtlOuBcAmp3A+F4rn5VC5p
+U9MMliLaYYY9369lrMk/1u/mOvHmrkV5XdkinR9cY82A2swexWrpNg0IXJorrWXM
+l6mgCncCAwEAATANBgkqhkiG9w0BAQsFAAOBgQBQmC3rYQCyB3iCJBhRF4H10EMw
+NCNMPUiOMvu0+TOIz09hx71LjRbtxUQ+NeksuHJ3ii6UG2XIgXvFCaE0v/pB1UkK
+oTqyfzUSZGvPyODEBX+erq5sQeUeONGHDIEK9c200kwlSnfHSoDSk/C3ceIYY/Ry
+nD3fl05aOEowsVesMw==
+</ns5:X509Certificate></ns5:X509Data></ns5:KeyInfo></ns0:KeyDescriptor><ns0:KeyDescriptor use="signing"><ns5:KeyInfo><ns5:X509Data><ns5:X509Certificate>MIICSTCCAbICAQEwDQYJKoZIhvcNAQELBQAwbTELMAkGA1UEBhMCc2UxCzAJBgNV
+BAgTAmFjMQ0wCwYDVQQHEwR1bWVhMRwwGgYDVQQKExNJVFMgVW1lYSBVbml2ZXJz
+aXR5MQ0wCwYDVQQLEwRESVJHMRUwEwYDVQQDEwxsb2NhbGhvc3QuY2EwHhcNMTQw
+MzE3MTY0MjM5WhcNMjQwMzE0MTY0MjM5WjBtMQswCQYDVQQGEwJzZTELMAkGA1UE
+CBMCYWMxDTALBgNVBAcTBHVtZWExHDAaBgNVBAoTE0lUUyBVbWVhIFVuaXZlcnNp
+dHkxDTALBgNVBAsTBERJUkcxFTATBgNVBAMTDGxvY2FsaG9zdC5jYTCBnzANBgkq
+hkiG9w0BAQEFAAOBjQAwgYkCgYEA0+e/ncbbFMpsYc7Pb5wub2Q0jBpaaae3ZklR
+8QNLgQnja6kkKseRR3oOBioo9e7qZbN1N6E2mIye/pMtlOuBcAmp3A+F4rn5VC5p
+U9MMliLaYYY9369lrMk/1u/mOvHmrkV5XdkinR9cY82A2swexWrpNg0IXJorrWXM
+l6mgCncCAwEAATANBgkqhkiG9w0BAQsFAAOBgQBQmC3rYQCyB3iCJBhRF4H10EMw
+NCNMPUiOMvu0+TOIz09hx71LjRbtxUQ+NeksuHJ3ii6UG2XIgXvFCaE0v/pB1UkK
+oTqyfzUSZGvPyODEBX+erq5sQeUeONGHDIEK9c200kwlSnfHSoDSk/C3ceIYY/Ry
+nD3fl05aOEowsVesMw==
+</ns5:X509Certificate></ns5:X509Data></ns5:KeyInfo></ns0:KeyDescriptor><ns0:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="http://localhost:8087/slo" /><ns0:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="http://localhost:8087" index="1" /></ns0:SPSSODescriptor><ns0:Organization><ns0:OrganizationName xml:lang="en">Test  SP</ns0:OrganizationName><ns0:OrganizationDisplayName xml:lang="en">Test SP</ns0:OrganizationDisplayName><ns0:OrganizationURL xml:lang="en">http://localhost:8087</ns0:OrganizationURL></ns0:Organization><ns0:ContactPerson contactType="technical"><ns0:GivenName>Test</ns0:GivenName><ns0:SurName>Testsson</ns0:SurName><ns0:EmailAddress>test.testsson@test.se</ns0:EmailAddress></ns0:ContactPerson></ns0:EntityDescriptor>

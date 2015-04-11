@@ -37,7 +37,6 @@ def main():
         # translate into hours
         valid_for = int(args.valid) * 24
 
-    print os.getcwd()
     sys.path.insert(0, os.getcwd())
     idp_conf, sp_confs = get_configurations(args.config)
 
