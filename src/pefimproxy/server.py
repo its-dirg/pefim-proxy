@@ -17,6 +17,7 @@ from pefimproxy.back import SamlSP
 from pefimproxy.front import SamlIDP
 from pefimproxy.util.config import get_configurations
 from pefimproxy.util.http import HttpHelper, Session
+from pefimproxy.util.targetid import TargetIdHandler
 
 
 class start_response_intercept(object):
@@ -32,8 +33,23 @@ class start_response_intercept(object):
 
 class WsgiApplication(object, ):
     def __init__(self, args, base_dir):
+        self.ident = None
         sys.path.insert(0, os.getcwd())
         server_conf = importlib.import_module(args.server_config)
+        e_alg = None
+        if "e_alg" in args:
+            e_alg = args.e_alg
+        key = None
+        if "key" in args:
+            key = args.key
+        h_alg = None
+        if "h_alg" in args:
+            h_alg = args.h_alg
+        iv = None
+        if "iv" in args:
+            iv = args.iv
+
+        self.tid_handler = TargetIdHandler(e_alg=e_alg, key=key, h_alg=h_alg, iv=iv)
         self.cache = {}
         self.urls = [(r'.+\.css$', WsgiApplication.css), ]
         self.sp_args = None
@@ -64,19 +80,49 @@ class WsgiApplication(object, ):
 
         sp = SamlSP(None, None, self.config["SP"], self.cache)
         self.urls.extend(sp.register_endpoints())
+        
+        try:
+            self.tid1_to_tid2 = server_conf.TID1_TO_TID2
+        except:
+            self.tid1_to_tid2 = None
+        try:
+            self.tid2_to_tid1 = server_conf.TID2_TO_TID1
+        except:
+            self.tid2_to_tid1 = None
+        try:
+            self.encmsg_to_iv = server_conf.ENCMSG_TO_IV
+        except:
+            self.encmsg_to_iv = None
 
-        self.name_id_org_new = server_conf.NAME_ID_ORG_NEW
-        self.name_ide_new_org = server_conf.NAME_ID_NEW_ORG
+        try:
+            self.force_persistant_nameid = server_conf.FORCE_PRESISTANT_NAMEID
+        except:
+            self.force_persistant_nameid = False
 
-        self.idp = SamlIDP(None, None, self.config["IDP"], self.cache, None,
-                           self.name_id_org_new, self.name_ide_new_org)
+        try:
+            self.force_no_userid_subject_cacheing = server_conf.FORCE_NO_USERID_SUBJECT_CACHEING
+        except:
+            self.force_no_userid_subject_cacheing = False
+
+
+        self.idp = self.create_SamlIDP(None, None, None)
         self.urls.extend(self.idp.register_endpoints())
 
-    def get_name_id_org(self, name_id_new):
-        return self.name_ide_new_org[name_id_new]
+    def get_tid1(self, tid2):
+        if self.tid2_to_tid1 is None:
+            iv = None
+            if self.encmsg_to_iv is not None:
+                iv = self.encmsg_to_iv[tid2]
+            tid2_dict = self.tid_handler.td2_decrypt(tid2, iv=iv)
+            return tid2_dict
+        elif tid2 in self.tid2_to_tid1:
+            tid1 = self.tid2_to_tid1[tid2]
+        return None
 
-    def get_name_id_new(self, name_id_org):
-        return self.name_id_org_new[name_id_org]
+    def get_tid2(self, tid1):
+        if tid1 in self.tid1_to_tid2:
+            return self.tid1_to_tid2[tid1]
+        return None
 
     @staticmethod
     def css(environ, start_response):
@@ -92,8 +138,24 @@ class WsgiApplication(object, ):
     def arg_parser(idpconfig=None, spconf=None):
         #Read arguments.
         parser = argparse.ArgumentParser()
+        #True if the server should save debug logs.
         parser.add_argument('-d', dest='debug', action='store_true')
+        #An entityid for an Idp, if only one underlying IdP should be used. Otherwise will discovery be used.
         parser.add_argument('-e', dest="entityid")
+        #Encryption algorithm to be used for target id 2. See TargetIdHandler for approved values.
+        #Default is aes_128_cbc if flag is left out.
+        parser.add_argument('-e_alg', dest="e_alg")
+        #Encryption key to be used for target id2. See TargetIdHandler for approved values.
+        parser.add_argument('-key', dest="key")
+        #Hash algorithm to be used for target id2 and generated userid.  See TargetIdHandler for approved values.
+        #Default is sha256 if flag is left out.
+        parser.add_argument('-h_alg', dest="h_alg")
+        #Initialization vector to be used for the encryption.
+        #Default is to create a random value for each call if the encrypted messages can be saved,
+        #otherwise will the same random value be used for each call.
+        #If the same iv is to be used each call its recommended to assign a value to make sure the same iv is used if
+        #the server restart.
+        parser.add_argument('-iv', dest="iv")
         parser.add_argument(dest="config")
         parser.add_argument(dest="server_config")
         args = parser.parse_args()
@@ -152,6 +214,18 @@ class WsgiApplication(object, ):
             # start the process by finding out which IdP to authenticate at
             return inst.disco_query(info["authn_req"], relay_state, info["req_args"])
 
+    def create_SamlIDP(self, environ, start_response, func):
+        _idp = SamlIDP(environ, start_response,
+                       self.config["IDP"], self.cache, func, self.tid1_to_tid2, self.tid2_to_tid1,
+                       self.encmsg_to_iv, self.tid_handler, self.force_persistant_nameid,
+                       self.force_no_userid_subject_cacheing)
+
+        if self.ident is None:
+            self.ident = _idp.idp.ident
+        else:
+            _idp.idp.ident = self.ident
+        return _idp
+
     def outgoing(self, response, org_response, instance):
         """
         An authentication response has been received and now an authentication
@@ -162,8 +236,7 @@ class WsgiApplication(object, ):
         :return: response
         """
 
-        _idp = SamlIDP(instance.environ, instance.start_response,
-                       self.config["IDP"], self.cache, self.outgoing, self.name_id_org_new, self.name_ide_new_org)
+        _idp = self.create_SamlIDP(instance.environ, instance.start_response, self.outgoing)
 
         _state = instance.sp.state[response.in_response_to]
         orig_authn_req, relay_state, req_args = instance.sp.state[_state]
@@ -185,6 +258,7 @@ class WsgiApplication(object, ):
             _authn = None  #Works for encrypted assertion
 
         identity = response.ava
+
         if identity is None and response.response.encrypted_assertion is not None:
             #Add dummy value
             identity = {"uid": "dummyuser"}
@@ -213,8 +287,7 @@ class WsgiApplication(object, ):
                               self.outgoing, sp_key=spec[3], **self.sp_args)
                 param = spec[2:3]
             else:
-                inst = SamlIDP(environ, start_response, self.config["IDP"], self.cache,
-                               self.incomming, self.name_id_org_new, self.name_ide_new_org)
+                inst = self.create_SamlIDP(environ, start_response, self.incomming)
                 param = spec[2:]
 
             func = getattr(inst, spec[1])

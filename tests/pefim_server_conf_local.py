@@ -39,7 +39,24 @@ SESSION_OPTS = {
     #'session.timeout' : 900 #Never expires only when the session is closed.
 }
 
-#Database with the underlying IDP's name_id as key and the proxy generated name_id as value.
-NAME_ID_ORG_NEW = {}
-#Database with the underlying IDP's name_id as value and the proxy generated name_id as key.
-NAME_ID_NEW_ORG = {}
+#If value is not existing or False name will answer according to the metadata from the SP.
+#If set to True, the nameid will always be persistant.
+#No matter what setting, the nameid value will always be the same. That is based on the underlying idp as
+#a hash or encrypted.
+FORCE_PRESISTANT_NAMEID = True
+
+#If value is not existing or False will all nameid values(tid2) generated from an underlying IdP with the same nameid
+# be cached in the proxy and the same nameid(tid2) will always be returned.
+#If set to True, a new nameid(tid2) value will be generated everytime.
+FORCE_NO_USERID_SUBJECT_CACHEING = False
+
+#Database/dictionary with the underlying IDP's nameid(tid1) as key and the proxy generated nameid(tid2) as value.
+#If None or removed will no values be saved.
+TID1_TO_TID2 = None #{}
+#Database/dictionary with the underlying IDP's nameid(tid1) as value and the proxy generated nameid(tid2) as key.
+#If None or removed will no valus be saved.
+TID2_TO_TID1 = None #{}
+#Database/dictionary containing the encrypted tid2 value as key and initialization vector(iv) as value. If a
+#database/dictionary exists a new vi will be generated for each encryption performed.
+#If None or removed will no valus be saved and the same iv be used for each encryption.
+ENCMSG_TO_IV = None #{}

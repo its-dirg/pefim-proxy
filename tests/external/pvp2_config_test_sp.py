@@ -4,7 +4,7 @@ from saml2 import BINDING_HTTP_POST
 from saml2 import BINDING_HTTP_REDIRECT
 from saml2.cert import OpenSSLWrapper
 from saml2.extension.idpdisc import BINDING_DISCO
-from saml2.saml import NAME_FORMAT_URI
+from saml2.saml import NAME_FORMAT_URI, NAMEID_FORMAT_PERSISTENT
 from saml2.entity_category.at_egov_pvp2 import PVP2
 
 try:
@@ -58,7 +58,8 @@ CONFIG = {
             },
             "required_attributes": ["pvp-version", "pvp-principal-name", ],
             "optional_attributes": ["pvp-givenname", "pvp-birthdate", "pvp-userid", ],
-        }
+            "name_id_format": [NAMEID_FORMAT_PERSISTENT],
+        },
     },
     "debug": 1,
     #You must change this to your files!

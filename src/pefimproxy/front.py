@@ -1,13 +1,16 @@
 #!/usr/bin/env python
 import logging
 from urlparse import urlparse
+from dsml import special_entities
 from saml2 import class_name
 from saml2.httputil import ServiceError
 from saml2.httputil import Response
 from saml2.httputil import Redirect
 from saml2.httputil import Unauthorized
+from saml2.ident import IdentDB
 from saml2.s_utils import UnknownPrincipal
 from saml2.s_utils import UnsupportedBinding
+from saml2.saml import NAMEID_FORMAT_PERSISTENT
 from saml2.server import Server
 from saml2.sigver import encrypt_cert_from_item, pre_signature_part
 import service
@@ -15,7 +18,8 @@ import service
 logger = logging.getLogger(__name__)
 
 class SamlIDP(service.Service):
-    def __init__(self, environ, start_response, conf, cache, incomming, name_id_org_new, name_ide_new_org):
+    def __init__(self, environ, start_response, conf, cache, incomming, tid1_to_tid2, tid2_to_tid1, 
+                 encmsg_to_iv, tid_handler, force_persistant_nameid, force_no_userid_subject_cacheing):
         """
         Constructor for the class.
         :param environ: WSGI environ
@@ -27,8 +31,12 @@ class SamlIDP(service.Service):
         self.response_bindings = None
         self.idp = Server(config=conf, cache=cache)
         self.incomming = incomming
-        self.name_id_org_new = name_id_org_new
-        self.name_ide_new_org = name_ide_new_org
+        self.tid1_to_tid2 = tid1_to_tid2
+        self.tid2_to_tid1 = tid2_to_tid1
+        self.encmsg_to_iv = encmsg_to_iv
+        self.tid_handler = tid_handler
+        self.force_persistant_nameid = force_persistant_nameid
+        self.force_no_userid_subject_cacheing = force_no_userid_subject_cacheing
 
     def verify_request(self, query, binding):
         """ Parses and verifies the SAML Authentication Request
@@ -125,11 +133,31 @@ class SamlIDP(service.Service):
             return self.incomming(_dict, self, self.environ,
                                   self.start_response, _request["RelayState"])
 
-    def save_nameid(self, org_resp, new_resp):
-        org_name_id = org_resp.assertion.subject.name_id.text
-        new_name_id = new_resp.assertion.subject.name_id.text
-        self.name_id_org_new[org_name_id] = new_name_id
-        self.name_ide_new_org[new_name_id] = org_name_id
+    def get_tid1_resp(self, org_resp):
+        tid1 = org_resp.assertion.subject.name_id.text
+        return tid1
+
+    def get_sp_entityid(self, resp_args):
+        sp_entityid = resp_args["destination"]
+        return sp_entityid
+
+    def get_tid2_enc(self, tid1, sp_entityid):
+        iv = None
+        if self.encmsg_to_iv is not None:
+            iv = self.tid_handler.get_new_iv()
+        tid2_enc = self.tid_handler.td2_encrypt(tid1, sp_entityid, iv=iv)
+        if self.encmsg_to_iv is not None:
+            self.encmsg_to_iv[tid2_enc] = iv
+        return tid2_enc
+
+    def get_tid2_hash(self, tid1, sp_entityid):
+        tid2_hash = self.tid_handler.td2_hash(self, tid1, sp_entityid)
+
+    def handle_tid(self, tid1, tid2):
+        if self.tid1_to_tid2 is not None:
+            self.tid1_to_tid2[tid1] = tid2
+        if self.tid2_to_tid1 is not None:
+            self.tid2_to_tid1[tid2] = tid1
 
     def construct_authn_response(self, identity, userid, authn, resp_args,
                                  relay_state, name_id=None, sign_response=True, org_resp=None, org_xml_response=None):
@@ -143,11 +171,50 @@ class SamlIDP(service.Service):
         :param sign_response:
         :return:
         """
+
+        sp_entityid = self.get_sp_entityid(resp_args)
+        tid1 = self.get_tid1_resp(org_resp)
+        userid = self.tid_handler.uid_hash(tid1)
+
+        if self.force_no_userid_subject_cacheing:
+            self.idp.ident = IdentDB({})
+
+        name_id_exist = False
+        if self.idp.ident.find_nameid(userid):
+            name_id_exist = True
+
+        if not name_id_exist:
+            if identity is not None:
+                identity["uid"] = userid
+            if self.tid2_to_tid1 is None:
+                tid2 = self.get_tid2_enc(tid1, sp_entityid)
+            else:
+                tid2 = self.get_tid2_hash(tid1, sp_entityid)
+        else:
+            tid2 = None
+
+        if self.force_persistant_nameid:
+            if "name_id_policy" in resp_args:
+                resp_args["name_id_policy"].format = NAMEID_FORMAT_PERSISTENT
+
+
         _resp = self.idp.create_authn_response(identity, userid=userid, name_id=name_id,
                                                authn=authn,
                                                sign_response=False,
                                                **resp_args)
-        self.save_nameid(org_resp, _resp)
+
+        if not name_id_exist:
+            #Fix for name_id so sid2 is used instead.
+            _resp.assertion.subject.name_id.text = tid2
+            self.idp.ident.remove_local(userid)
+            self.idp.ident.store(userid, _resp.assertion.subject.name_id)
+
+        tid2 = _resp.assertion.subject.name_id.text
+        if self.tid2_to_tid1 is not None:
+            self.tid2_to_tid1[tid2] = tid1
+            if self.tid1_to_tid2 is not None:
+                self.tid1_to_tid2[tid1] = tid2
+
         advice = None
         for tmp_assertion in org_resp.response.assertion:
             if tmp_assertion.advice is not None:

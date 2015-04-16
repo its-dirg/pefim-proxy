@@ -104,7 +104,7 @@ CONFIG = {
                     "entity_categories": ["at_egov_pvp2"]
                 },
             },
-            "subject_data": "./idp.subject",
+            #"subject_data": "./idp.subject",
             "name_id_format": [NAMEID_FORMAT_TRANSIENT,
                                NAMEID_FORMAT_PERSISTENT]
         },

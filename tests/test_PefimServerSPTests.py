@@ -56,6 +56,20 @@ class PefimServerSPTests(helper.CPWebCase):
         self.assertTrue('http://test.sp.se:8900/acs/post' == action, "Must be designated for the right SP!")
         resp = test_sp.eval_authn_response(body["SAMLResponse"])
         new_name_id = resp.assertion.subject.name_id.text
-        org_name_id = self.WSGI_APP.get_name_id_org(new_name_id)
-        self.assertTrue(new_name_id == self.WSGI_APP.get_name_id_new(org_name_id))
+        tid2 = self.WSGI_APP.get_tid1(new_name_id)
+        self.assertTrue(tid2['tid1'] == "testuser1", "Verify that tid1 is ok!")
+        self.assertTrue(tid2['sp_entityid'] == "http://test.sp.se:8900/acs/post", "Verify that sp_entity is ok!")
         self.assertTrue(test_idp.simple_verify_authn_response_ava(resp.ava, "testuser1"))
+
+        test_sp = TestSp(self.BASEDIR)
+        url = test_sp.create_authn_request()
+        self.getPage(url)
+        req = get_url_dict(self.headers)
+        test_idp = TestIdP(self.BASEDIR)
+        action, body = test_idp.handle_authn_request(req["SAMLRequest"][0], req["RelayState"][0], BINDING_HTTP_REDIRECT,
+                                                     "testuser1")
+        cookies = create_cookie_header(self.cookies)
+        self.getPage(action, headers=cookies, method='POST', body=body)
+        action, body = get_post_action_body(self.body)
+        resp = test_sp.eval_authn_response(body["SAMLResponse"])
+        self.assertTrue(new_name_id == resp.assertion.subject.name_id.text, "No new NameId should be generated!")

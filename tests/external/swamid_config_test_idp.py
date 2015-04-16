@@ -104,7 +104,7 @@ CONFIG = {
                     "entity_categories": ["swamid"]
                 },
             },
-            "subject_data": "./idp.subject",
+            #"subject_data": "./idp.subject",
             "name_id_format": [NAMEID_FORMAT_TRANSIENT,
                                NAMEID_FORMAT_PERSISTENT]
         },

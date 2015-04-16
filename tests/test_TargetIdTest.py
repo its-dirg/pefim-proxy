@@ -99,3 +99,21 @@ class TestTargetId():
             assert tid2_dict_1["sp_entityid"] == tid2_dict_2["sp_entityid"] == self.sp_entity_id, \
                 "Cannot verify SP entity id."
             assert tid2_dict_1["uuid"] != tid2_dict_2["uuid"], "Cannot verify uuid."
+
+    def test_encrypt_alg_4(self):
+        for alg in TargetIdHandler.AES_ALG:
+            typ, bits, cmode = alg.split("_")
+            iv = os.urandom(16)
+            key = os.urandom(int(bits) >> 3)
+            tih = TargetIdHandler(e_alg=alg, iv=iv, key=key)
+            tid1 = self.nameid1.text.strip()
+            iv = tih.get_new_iv()
+            tid2_encrypted_1 = tih.td2_encrypt(tid1, self.sp_entity_id, iv=iv)
+            tid2_encrypted_2 = tih.td2_encrypt(tid1, self.sp_entity_id, iv=iv)
+            tid2_dict_1 = tih.td2_decrypt(tid2_encrypted_1)
+            tid2_dict_2 = tih.td2_decrypt(tid2_encrypted_2)
+            assert tid2_encrypted_1 != tid2_encrypted_2, "Two encryption of the same data must never be the same!"
+            assert tid2_dict_1["tid1"] == tid2_dict_2["tid1"] == self.nameid1_text, "Cannot verify tid1."
+            assert tid2_dict_1["sp_entityid"] == tid2_dict_2["sp_entityid"] == self.sp_entity_id, \
+                "Cannot verify SP entity id."
+            assert tid2_dict_1["uuid"] != tid2_dict_2["uuid"], "Cannot verify uuid."
