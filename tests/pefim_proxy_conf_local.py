@@ -77,7 +77,8 @@ CONFIG = {
                 "discovery_response": [
                     ("%s/disco" % BASE, BINDING_DISCO)
                 ]
-            }
+            },
+            "name_id_format": NAMEID_FORMAT_PERSISTENT,
         },
     },
     "debug": 1,

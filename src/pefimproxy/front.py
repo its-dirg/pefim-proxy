@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 class SamlIDP(service.Service):
     def __init__(self, environ, start_response, conf, cache, incomming, tid1_to_tid2, tid2_to_tid1, 
-                 encmsg_to_iv, tid_handler, force_persistant_nameid, force_no_userid_subject_cacheing):
+                 encmsg_to_iv, tid_handler, force_persistant_nameid, force_no_userid_subject_cacheing, idp=None):
         """
         Constructor for the class.
         :param environ: WSGI environ
@@ -29,7 +29,10 @@ class SamlIDP(service.Service):
         """
         service.Service.__init__(self, environ, start_response)
         self.response_bindings = None
-        self.idp = Server(config=conf, cache=cache)
+        if idp is None:
+            self.idp = Server(config=conf, cache=cache)
+        else:
+            self.idp = idp
         self.incomming = incomming
         self.tid1_to_tid2 = tid1_to_tid2
         self.tid2_to_tid1 = tid2_to_tid1
@@ -145,19 +148,37 @@ class SamlIDP(service.Service):
         iv = None
         if self.encmsg_to_iv is not None:
             iv = self.tid_handler.get_new_iv()
-        tid2_enc = self.tid_handler.td2_encrypt(tid1, sp_entityid, iv=iv)
+        tid2_enc = self.tid_handler.tid2_encrypt(tid1, sp_entityid, iv=iv)
         if self.encmsg_to_iv is not None:
             self.encmsg_to_iv[tid2_enc] = iv
         return tid2_enc
 
     def get_tid2_hash(self, tid1, sp_entityid):
-        tid2_hash = self.tid_handler.td2_hash(self, tid1, sp_entityid)
+        tid2_hash = self.tid_handler.tid2_hash(tid1, sp_entityid)
+        return tid2_hash
 
     def handle_tid(self, tid1, tid2):
         if self.tid1_to_tid2 is not None:
             self.tid1_to_tid2[tid1] = tid2
         if self.tid2_to_tid1 is not None:
             self.tid2_to_tid1[tid2] = tid1
+
+    def name_id_exists(self, userid, name_id_policy, sp_entity_id):
+        try:
+            snq = name_id_policy.sp_name_qualifier
+        except AttributeError:
+            snq = sp_entity_id
+
+        if not snq:
+            snq = sp_entity_id
+
+        kwa = {"sp_name_qualifier": snq}
+
+        try:
+            kwa["format"] = name_id_policy.format
+        except AttributeError:
+            pass
+        return self.idp.ident.find_nameid(userid, **kwa)
 
     def construct_authn_response(self, identity, userid, authn, resp_args,
                                  relay_state, name_id=None, sign_response=True, org_resp=None, org_xml_response=None):
@@ -180,7 +201,7 @@ class SamlIDP(service.Service):
             self.idp.ident = IdentDB({})
 
         name_id_exist = False
-        if self.idp.ident.find_nameid(userid):
+        if self.name_id_exists(userid, resp_args["name_id_policy"], resp_args["sp_entity_id"]):
             name_id_exist = True
 
         if not name_id_exist:
@@ -196,7 +217,6 @@ class SamlIDP(service.Service):
         if self.force_persistant_nameid:
             if "name_id_policy" in resp_args:
                 resp_args["name_id_policy"].format = NAMEID_FORMAT_PERSISTENT
-
 
         _resp = self.idp.create_authn_response(identity, userid=userid, name_id=name_id,
                                                authn=authn,

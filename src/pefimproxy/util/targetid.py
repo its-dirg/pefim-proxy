@@ -48,30 +48,30 @@ class TargetIdHandler(object):
     def get_new_iv(self):
         return Random.new().read(AES.block_size)
 
-    def td2_json(self, tid1, sp_entityid):
-        td2_dict = {
+    def tid2_json(self, tid1, sp_entityid):
+        tid2_dict = {
             "tid1": tid1,
             "sp_entityid": sp_entityid,
             "uuid": uuid4().urn
         }
-        return json.dumps(td2_dict)
+        return json.dumps(tid2_dict)
 
-    def td2_dict(self, tid2_json):
+    def tid2_dict(self, tid2_json):
         return json.loads(tid2_json)
 
-    def td2_encrypt(self, tid1, sp_entityid, iv=None):
-        td2 = self.td2_json(tid1, sp_entityid)
-        td2_encrypt = self.aes.encrypt(msg=td2, alg=self.e_alg, iv=None)
-        return td2_encrypt
+    def tid2_encrypt(self, tid1, sp_entityid, iv=None):
+        tid2 = self.tid2_json(tid1, sp_entityid)
+        tid2_encrypt = self.aes.encrypt(msg=tid2, alg=self.e_alg, iv=None)
+        return tid2_encrypt
 
-    def td2_decrypt(self, td2_encrypted, iv=None):
-        td2_json = self.aes.decrypt(td2_encrypted, alg=self.e_alg, iv=None)
-        return self.td2_dict(td2_json)
+    def tid2_decrypt(self, tid2_encrypted, iv=None):
+        tid2_json = self.aes.decrypt(tid2_encrypted, alg=self.e_alg, iv=None)
+        return self.tid2_dict(tid2_json)
 
-    def td2_hash(self, tid1, sp_entityid):
-        td2 = self.td2_json(tid1, sp_entityid)
+    def tid2_hash(self, tid1, sp_entityid):
+        tid2 = self.tid2_json(tid1, sp_entityid)
         hash_func = getattr(hashlib, self.h_alg)
-        return hash_func(td2).hexdigest()
+        return hash_func(tid2).hexdigest()
 
     def uid_hash(self, tid1):
         hash_func = getattr(hashlib, self.h_alg)

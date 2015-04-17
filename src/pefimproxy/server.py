@@ -6,6 +6,7 @@ import importlib
 import sys
 from os import path
 import os
+from saml2.authn_context import AuthnBroker, authn_context_class_ref, UNSPECIFIED
 
 from saml2.config import config_factory
 from saml2.httputil import NotFound, ServiceError
@@ -30,10 +31,12 @@ class start_response_intercept(object):
         self.exc_info = exc_info
         self.start_response(status, response_headers, exc_info=None)
 
+def username_password_authn_dummy():
+    return None
 
 class WsgiApplication(object, ):
     def __init__(self, args, base_dir):
-        self.ident = None
+        self.idp_server = None
         sys.path.insert(0, os.getcwd())
         server_conf = importlib.import_module(args.server_config)
         e_alg = None
@@ -104,23 +107,30 @@ class WsgiApplication(object, ):
         except:
             self.force_no_userid_subject_cacheing = False
 
+        samlidp = self.create_SamlIDP(None, None, None)
+        self.urls.extend(samlidp.register_endpoints())
+        self.issuer = server_conf.ISSUER
 
-        self.idp = self.create_SamlIDP(None, None, None)
-        self.urls.extend(self.idp.register_endpoints())
+    def get_iv(self, tid2):
+        if self.encmsg_to_iv is not None:
+            iv = self.encmsg_to_iv[tid2]
+            return iv
+        return None
 
     def get_tid1(self, tid2):
         if self.tid2_to_tid1 is None:
             iv = None
             if self.encmsg_to_iv is not None:
                 iv = self.encmsg_to_iv[tid2]
-            tid2_dict = self.tid_handler.td2_decrypt(tid2, iv=iv)
+            tid2_dict = self.tid_handler.tid2_decrypt(tid2, iv=iv)
             return tid2_dict
         elif tid2 in self.tid2_to_tid1:
             tid1 = self.tid2_to_tid1[tid2]
+            return tid1
         return None
 
     def get_tid2(self, tid1):
-        if tid1 in self.tid1_to_tid2:
+        if self.tid1_to_tid2 is not None and tid1 in self.tid1_to_tid2:
             return self.tid1_to_tid2[tid1]
         return None
 
@@ -218,12 +228,10 @@ class WsgiApplication(object, ):
         _idp = SamlIDP(environ, start_response,
                        self.config["IDP"], self.cache, func, self.tid1_to_tid2, self.tid2_to_tid1,
                        self.encmsg_to_iv, self.tid_handler, self.force_persistant_nameid,
-                       self.force_no_userid_subject_cacheing)
+                       self.force_no_userid_subject_cacheing, self.idp_server)
 
-        if self.ident is None:
-            self.ident = _idp.idp.ident
-        else:
-            _idp.idp.ident = self.ident
+        if self.idp_server is None:
+            self.idp_server = _idp.idp
         return _idp
 
     def outgoing(self, response, org_response, instance):
@@ -243,19 +251,23 @@ class WsgiApplication(object, ):
 
         # The Subject NameID
         try:
-            #TODO Must fix this so the subject/nameid is unencrypted
             subject = response.get_subject()
         except:
             pass
 
         resp_args = _idp.idp.response_args(orig_authn_req)
 
-        # Slightly awkward, should be done better
+
         try:
             _authn_info = response.authn_info()[0]
-            _authn = {"class_ref": _authn_info[0], "authn_auth": _authn_info[1][0]}
+            AUTHN_BROKER = AuthnBroker()
+            AUTHN_BROKER.add(authn_context_class_ref(_authn_info[0]), username_password_authn_dummy, 0, self.issuer)
+            _authn = AUTHN_BROKER.get_authn_by_accr(_authn_info[0])
+            #_authn = {"class_ref": _authn_info[0], "authn_auth": self.issuer}
         except:
-            _authn = None  #Works for encrypted assertion
+            AUTHN_BROKER = AuthnBroker()
+            AUTHN_BROKER.add(authn_context_class_ref(UNSPECIFIED), username_password_authn_dummy, 0, self.issuer)
+            _authn = AUTHN_BROKER.get_authn_by_accr(UNSPECIFIED)
 
         identity = response.ava
 
