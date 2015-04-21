@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 import logging
 from urlparse import urlparse
-from dsml import special_entities
 from saml2 import class_name
 from saml2.httputil import ServiceError
 from saml2.httputil import Response
