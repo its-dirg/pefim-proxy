@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import logging
 import time
+from saml2.saml import NAMEID_FORMAT_PERSISTENT
 import xmldsig
 
 from urlparse import urlparse
@@ -29,11 +30,13 @@ logger = logging.getLogger(__name__)
 
 class SamlSP(service.Service):
     def __init__(self, environ, start_response, config, cache=None,
-                 outgoing=None, calling_sp_entity_id=None, sp_key=None, discosrv=None, bindings=None):
+                 outgoing=None, calling_sp_entity_id=None, sp_key=None, discosrv=None, bindings=None,
+                 force_persistant_nameid=None):
         service.Service.__init__(self, environ, start_response)
         self.sp_dict = {}
         self.sp = None
         ent_cat = None
+        self.force_persistant_nameid = force_persistant_nameid
         self.sp_error_resp = None
         if sp_key is not None:
             self.sp = Base(config[sp_key]["config"], state_cache=cache)
@@ -135,6 +138,13 @@ class SamlSP(service.Service):
                 "assertion_consumer_service"]
             # just pick one
             endp, return_binding = acs[0]
+
+            if self.force_persistant_nameid:
+                if "name_id_policy" in req_args:
+                    req_args["name_id_policy"].format = NAMEID_FORMAT_PERSISTENT
+                else:
+                    req_args["nameid_format"] = NAMEID_FORMAT_PERSISTENT
+
             if encrypt_cert is not None:
                 spcertenc = SPCertEnc(x509_data=xmldsig.X509Data(x509_certificate=xmldsig.X509Certificate(
                     text=encrypt_cert)))

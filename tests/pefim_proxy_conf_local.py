@@ -87,6 +87,7 @@ CONFIG = {
     "metadata": {
         #"mdfile": ["swamid2.md"],
         "local": [
+            BASEDIR + "/external/pvp2_config_transient_test_sp.xml",
             BASEDIR + "/external/pvp2_config_test_sp.xml",
             BASEDIR + "/external/at_egov_pvp2_config_test_idp.xml",
             BASEDIR + "/external/swamid_config_test_idp.xml",

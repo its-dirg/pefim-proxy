@@ -191,6 +191,9 @@ class SamlIDP(service.Service):
         :param sign_response:
         :return:
         """
+        if self.force_persistant_nameid:
+            if "name_id_policy" in resp_args:
+                resp_args["name_id_policy"].format = NAMEID_FORMAT_PERSISTENT
 
         sp_entityid = self.get_sp_entityid(resp_args)
         tid1 = self.get_tid1_resp(org_resp)
@@ -212,10 +215,6 @@ class SamlIDP(service.Service):
                 tid2 = self.get_tid2_hash(tid1, sp_entityid)
         else:
             tid2 = None
-
-        if self.force_persistant_nameid:
-            if "name_id_policy" in resp_args:
-                resp_args["name_id_policy"].format = NAMEID_FORMAT_PERSISTENT
 
         _resp = self.idp.create_authn_response(identity, userid=userid, name_id=name_id,
                                                authn=authn,

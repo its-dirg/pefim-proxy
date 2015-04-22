@@ -58,7 +58,7 @@ CONFIG = {
             },
             "required_attributes": ["pvp-version", "pvp-principal-name", ],
             "optional_attributes": ["pvp-givenname", "pvp-birthdate", "pvp-userid", ],
-            "name_id_format": [NAMEID_FORMAT_PERSISTENT],
+            "name_id_format": [NAMEID_FORMAT_TRANSIENT],
         },
     },
     "debug": 1,

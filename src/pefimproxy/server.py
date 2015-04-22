@@ -213,6 +213,7 @@ class WsgiApplication(object, ):
         # If I know which IdP to authenticate at return a redirect to it
         calling_sp_entity_id = info["authn_req"].issuer.text
         inst = SamlSP(environ, start_response, self.config["SP"], self.cache, self.outgoing, calling_sp_entity_id,
+                      force_persistant_nameid=self.force_persistant_nameid,
                       **self.sp_args)
         if inst.sp_error_resp is not None:
             return inst.sp_error_resp
@@ -296,7 +297,8 @@ class WsgiApplication(object, ):
         if isinstance(spec, tuple):
             if spec[0] == "SP":
                 inst = SamlSP(environ, start_response, self.config["SP"], self.cache,
-                              self.outgoing, sp_key=spec[3], **self.sp_args)
+                              self.outgoing, sp_key=spec[3], force_persistant_nameid=self.force_persistant_nameid,
+                              **self.sp_args)
                 param = spec[2:3]
             else:
                 inst = self.create_SamlIDP(environ, start_response, self.incomming)
