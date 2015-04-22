@@ -10,9 +10,6 @@ If the calling sp is configured to use persistent name id format and uses the en
 call the underlying IdP with the same configuration. Note that the supported entity categories must be added to the
 configuration.
 
-*******************
-Quick install guide
-*******************
 
 Install PEFIM proxy using docker
 ================================
