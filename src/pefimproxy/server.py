@@ -149,23 +149,26 @@ class WsgiApplication(object, ):
         #Read arguments.
         parser = argparse.ArgumentParser()
         #True if the server should save debug logs.
-        parser.add_argument('-d', dest='debug', action='store_true')
-        #An entityid for an Idp, if only one underlying IdP should be used. Otherwise will discovery be used.
-        parser.add_argument('-e', dest="entityid")
-        #Encryption algorithm to be used for target id 2. See TargetIdHandler for approved values.
-        #Default is aes_128_cbc if flag is left out.
-        parser.add_argument('-e_alg', dest="e_alg")
-        #Encryption key to be used for target id2. See TargetIdHandler for approved values.
-        parser.add_argument('-key', dest="key")
-        #Hash algorithm to be used for target id2 and generated userid.  See TargetIdHandler for approved values.
-        #Default is sha256 if flag is left out.
-        parser.add_argument('-h_alg', dest="h_alg")
-        #Initialization vector to be used for the encryption.
-        #Default is to create a random value for each call if the encrypted messages can be saved,
-        #otherwise will the same random value be used for each call.
-        #If the same iv is to be used each call its recommended to assign a value to make sure the same iv is used if
-        #the server restart.
-        parser.add_argument('-iv', dest="iv")
+        parser.add_argument('-d', dest='debug', action='store_true', help="Not implemented yet.")
+        parser.add_argument('-e', dest="entityid", help="Entity id for the underlying IdP if only one IdP should be"
+                                                        " used. Otherwise will a discovery server be used.")
+        parser.add_argument('-e_alg', dest="e_alg", help="Encryption algorithm to be used for target id 2. "
+                                                         "Approved values: aes_128_cbc, aes_128_cfb, aes_128_ecb, "
+                                                         "aes_192_cbc, aes_192_cfb, aes_192_ecb, aes_256_cbc, "
+                                                         "aes_256_cfb and aes_256_ecb"
+                                                         "Default is aes_128_cbc if flag is left out.")
+        parser.add_argument('-key', dest="key", help="Encryption key to be used for target id2."
+                                                     "Approved values is a valid key for the chosen encryption "
+                                                     "algorithm in e_alg.")
+        parser.add_argument('-h_alg', dest="h_alg", help="Hash algorithm to be used for target id 2 and the proxy "
+                                                         "userid. Approved values: md5, sha1, sha224, sha256, sha384, "
+                                                         "sha512 Default is sha256 if flag is left out.")
+        parser.add_argument('-iv', dest="iv", help="Initialization vector to be used for the encryption. "
+                                                   "Default is to create a random value for each call if the "
+                                                   "encrypted messages can be saved, otherwise will the same "
+                                                   "random value be used for each call. If the same iv is to be"
+                                                   " used each call its recommended to assign a value to make "
+                                                   "sure the same iv is used if the server restart.")
         parser.add_argument(dest="config")
         parser.add_argument(dest="server_config")
         args = parser.parse_args()

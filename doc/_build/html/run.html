@@ -1,0 +1,171 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Script guide &mdash; pefim_proxy 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="pefim_proxy 0.1 documentation" href="index.html" />
+    <link rel="prev" title="Quick install guide" href="install.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="install.html" title="Quick install guide"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">pefim_proxy 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="script-guide">
+<span id="scripts"></span><h1>Script guide<a class="headerlink" href="#script-guide" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="guide-to-generate-metadata">
+<h2>Guide to generate metadata<a class="headerlink" href="#guide-to-generate-metadata" title="Permalink to this headline">¶</a></h2>
+<p>You must create a configuration file for the pysaml2 based service providers(backend) and identity provider(frontend).</p>
+<p>To get started you can copy <strong>example/pefim_proxy_conf.example</strong> to a new file like <strong>example/pefim_proxy_conf.py</strong>/.</p>
+<p>The proxy configuration is based on a server configuration and to get started with that file copy <strong>example/pefim_server_conf.example</strong> to a new file like <strong>example/pefim_server_conf.py</strong>/.</p>
+<p>When all configuration is performed, you will need to generate metadata for the proxy. This can be performed with the
+script make_proxy_metadata.</p>
+<p>Example:</p>
+<div class="highlight-python"><div class="highlight"><pre>make_proxy_metadata pefim_proxy_conf &gt; pefim_proxy_conf.xml
+</pre></div>
+</div>
+</div>
+<div class="section" id="guide-to-start-the-server">
+<h2>Guide to start the server<a class="headerlink" href="#guide-to-start-the-server" title="Permalink to this headline">¶</a></h2>
+<p>The server depends on the two configuration files, pefim_proxy_conf.py and pefim_server_conf.py, mentioned in the previous header &#8220;Guide to generate metadata&#8221;;</p>
+<p>The proxy server is started with the script make_proxy_metadata.</p>
+<p>To start the proxy for one IdP run:</p>
+<div class="highlight-python"><div class="highlight"><pre>pefim_server pefim_proxy_conf pefim_server_conf -e IdPEntityId
+</pre></div>
+</div>
+<p>To start the proxy with discovery server:</p>
+<div class="highlight-python"><div class="highlight"><pre>pefim_server pefim_proxy_conf pefim_server_conf
+</pre></div>
+</div>
+<p>For more information about running the pefim proxy run:</p>
+<div class="highlight-python"><div class="highlight"><pre>pefim_server -help
+usage: pefim_server [-h] [-d] [-e ENTITYID] [-e_alg E_ALG] [-key KEY]
+                    [-h_alg H_ALG] [-iv IV]
+                    config server_config
+
+positional arguments:
+  config
+  server_config
+
+optional arguments:
+  -h, --help     show this help message and exit
+  -d             Not implemented yet.
+  -e ENTITYID    Entity id for the underlying IdP if only one IdP should
+                 be used. Otherwise will a discovery server be used.
+  -e_alg E_ALG   Encryption algorithm to be used for target id 2. Approved
+                 values: aes_128_cbc, aes_128_cfb, aes_128_ecb, aes_192_cbc,
+                 aes_192_cfb, aes_192_ecb, aes_256_cbc, aes_256_cfb and
+                 aes_256_ecbDefault is aes_128_cbc if flag is left out.
+  -key KEY       Encryption key to be used for target id2.Approved values is a
+                 valid key for the chosen encryption algorithm in e_alg.
+  -h_alg H_ALG   Hash algorithm to be used for target id 2 and the proxy
+                 userid. Approved values: md5, sha1, sha224, sha256, sha384,
+                 sha512 Default is sha256 if flag is left out.
+  -iv IV         Initialization vector to be used for the encryption. Default
+                 is to create a random value for each call if the encrypted
+                 messages can be saved, otherwise will the same random value
+                 be used for each call. If the same iv is to be used each call
+                 its recommended to assign a value to make sure the same iv is
+                 used if the server restart.
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Script guide</a><ul>
+<li><a class="reference internal" href="#guide-to-generate-metadata">Guide to generate metadata</a></li>
+<li><a class="reference internal" href="#guide-to-start-the-server">Guide to start the server</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="install.html"
+                        title="previous chapter">Quick install guide</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/run.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2015, Hans Hoerberg.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.3</a>
+      
+      |
+      <a href="_sources/run.txt"
+          rel="nofollow">Page source</a></li>
+    </div>
+
+    
+
+    
+  </body>
+</html>

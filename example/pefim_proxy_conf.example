@@ -31,8 +31,7 @@ BASE = pefim_server_conf.ISSUER + "%s"
 
 DISCO_SRV = "https://md.nordu.net/role/idp.ds"
 
-SP_ENTITY_CATEGORIES = [{"name": "pvp2", "entcat": [PVP2]}, {"name": "pvp2charge", "entcat": [PVP2CHARGE]},
-                        {"name": "re_eu", "entcat": [RESEARCH_AND_EDUCATION, EU]}]
+SP_ENTITY_CATEGORIES = [{"name": "pvp2", "entcat": [PVP2]}, {"name": "pvp2charge", "entcat": [PVP2CHARGE]}]
 
 #None if no default SP should be used, otherwise a list. The list may be empty.
 SP_ENTITY_CATEGORIES_DEFAULT = []
@@ -84,11 +83,7 @@ CONFIG = {
     "key_file": full_path("proxy_cert/new_server.key"),
     "cert_file": full_path("proxy_cert/new_server.crt"),
     "metadata": {
-        #"mdfile": ["swamid2.md"],
-        "local": ["/Users/haho0032/Develop/github/pefim_idp/example/idp.xml",
-                  "/Users/haho0032/Develop/github/pefim_idp_docker/scripts/etc/idp.xml",
-                  "/Users/haho0032/Develop/githubFork/pysaml2/example/idp2/idp_conf_pefim_proxy_docker.xml",
-                  "/Users/haho0032/Develop/githubFork/pysaml2/example/sp-repoze/sp.xml"]
+        "local": ["/path/to/metadata.xml"]
     },
     "organization": {
         "display_name": "Test Testsson",
