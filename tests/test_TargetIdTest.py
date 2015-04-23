@@ -1,9 +1,10 @@
 import os
+import unittest
 from saml2.ident import IdentDB
 from pefimproxy.util.targetid import TargetIdHandler
 
 
-class TestTargetId():
+class TargetIdTestCase(unittest.TestCase):
 
     def setup_class(self):
         self.id = IdentDB({})

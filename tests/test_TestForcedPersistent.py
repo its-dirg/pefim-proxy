@@ -19,7 +19,7 @@ from pefimproxy.server import WsgiApplication
 from argparse import Namespace
 
 
-class TestForcedPersistent(helper.CPWebCase):
+class ForcedPersistentTestCase(helper.CPWebCase):
     BASEDIR = os.path.abspath(os.path.dirname(__file__))
     ARGS = Namespace(debug=False,
                      entityid="http://test.idp.se:1111/TestIdP.xml",
@@ -32,10 +32,10 @@ class TestForcedPersistent(helper.CPWebCase):
 
     @staticmethod
     def application(environ, start_response):
-        return TestForcedPersistent.WSGI_APP.run_server(environ, start_response)
+        return ForcedPersistentTestCase.WSGI_APP.run_server(environ, start_response)
 
     def setup_server():
-        cherrypy.tree.graft(SessionMiddleware(TestForcedPersistent.application, pefim_server_conf_local.SESSION_OPTS),
+        cherrypy.tree.graft(SessionMiddleware(ForcedPersistentTestCase.application, pefim_server_conf_local.SESSION_OPTS),
                             '/')
         pass
 

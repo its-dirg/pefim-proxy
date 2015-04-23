@@ -19,7 +19,7 @@ from pefimproxy.server import WsgiApplication
 from argparse import Namespace
 
 
-class PefimServerSPTests(helper.CPWebCase):
+class TargetIdOnServerEncIvTestCase(helper.CPWebCase):
     BASEDIR = os.path.abspath(os.path.dirname(__file__))
     ARGS = Namespace(debug=False,
                      entityid="http://test.idp.se:1111/TestIdP.xml",
@@ -32,10 +32,10 @@ class PefimServerSPTests(helper.CPWebCase):
 
     @staticmethod
     def application(environ, start_response):
-        return PefimServerSPTests.WSGI_APP.run_server(environ, start_response)
+        return TargetIdOnServerEncIvTestCase.WSGI_APP.run_server(environ, start_response)
 
     def setup_server():
-        cherrypy.tree.graft(SessionMiddleware(PefimServerSPTests.application, pefim_server_conf_local.SESSION_OPTS),
+        cherrypy.tree.graft(SessionMiddleware(TargetIdOnServerEncIvTestCase.application, pefim_server_conf_local.SESSION_OPTS),
                             '/')
         pass
 

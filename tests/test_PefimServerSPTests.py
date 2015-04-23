@@ -17,7 +17,7 @@ import pefim_server_conf_local
 from pefimproxy.server import WsgiApplication
 
 
-class PefimServerSPTests(helper.CPWebCase):
+class PefimServerSPTestCase(helper.CPWebCase):
     BASEDIR = os.path.abspath(os.path.dirname(__file__))
     ARGS = Namespace(debug=False,
                      entityid="http://test.idp.se:1111/TestIdP.xml",
@@ -28,10 +28,10 @@ class PefimServerSPTests(helper.CPWebCase):
 
     @staticmethod
     def application(environ, start_response):
-        return PefimServerSPTests.WSGI_APP.run_server(environ, start_response)
+        return PefimServerSPTestCase.WSGI_APP.run_server(environ, start_response)
 
     def setup_server():
-        cherrypy.tree.graft(SessionMiddleware(PefimServerSPTests.application, pefim_server_conf_local.SESSION_OPTS),
+        cherrypy.tree.graft(SessionMiddleware(PefimServerSPTestCase.application, pefim_server_conf_local.SESSION_OPTS),
                             '/')
         pass
 

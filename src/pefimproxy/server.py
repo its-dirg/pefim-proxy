@@ -35,6 +35,29 @@ def username_password_authn_dummy():
     return None
 
 class WsgiApplication(object, ):
+
+    SERVER_CONF_MANDITORY_PARAMETERS = [
+        "SESSION_OPTS",
+        "CERT_CHAIN",
+        "SERVER_KEY",
+        "SERVER_CERT",
+        "LOG_FILE",
+        "ISSUER",
+        "BASEURL",
+        "HOST",
+        "HTTPS",
+        "PORT"
+    ]
+
+    CONF_MANDITORY_PARAMETERS = [
+        "CONFIG",
+        "SP_ENTITY_CATEGORIES_DEFAULT",
+        "SP_ENTITY_CATEGORIES",
+        "DISCO_SRV",
+        "BASE",
+        "BASEDIR"
+    ]
+
     def __init__(self, args, base_dir):
         self.idp_server = None
         sys.path.insert(0, os.getcwd())
@@ -145,11 +168,14 @@ class WsgiApplication(object, ):
         return resp(environ, start_response)
 
     @staticmethod
-    def arg_parser(idpconfig=None, spconf=None):
+    def arg_parser(args=None, error=None, exception=None):
         #Read arguments.
         parser = argparse.ArgumentParser()
         #True if the server should save debug logs.
         parser.add_argument('-d', dest='debug', action='store_true', help="Not implemented yet.")
+        parser.add_argument('-pe', dest='pe', action='store_true', help="Add this flag to print the exception that "
+                                                                        "that is the reason for an invalid "
+                                                                        "configuration error.")
         parser.add_argument('-e', dest="entityid", help="Entity id for the underlying IdP if only one IdP should be"
                                                         " used. Otherwise will a discovery server be used.")
         parser.add_argument('-e_alg', dest="e_alg", help="Encryption algorithm to be used for target id 2. "
@@ -169,10 +195,62 @@ class WsgiApplication(object, ):
                                                    "random value be used for each call. If the same iv is to be"
                                                    " used each call its recommended to assign a value to make "
                                                    "sure the same iv is used if the server restart.")
-        parser.add_argument(dest="config")
-        parser.add_argument(dest="server_config")
-        args = parser.parse_args()
+        parser.add_argument(dest="config", help="Configuration file for the pysaml sp and idp.")
+        parser.add_argument(dest="server_config", help="Configuration file with server settings.")
+        if args is not None:
+            args = parser.parse_args(args)
+        else:
+            args = parser.parse_args()
+        if error:
+            if args.pe:
+                error += "\n%s" % exception
+            parser.error(error)
+
+        valid, message = WsgiApplication.validate_server_config(args)
+        if not valid:
+            parser.error(message)
+        valid, message = WsgiApplication.validate_config(args)
+        if not valid:
+            parser.error(message)
         return args
+
+    @staticmethod
+    def validate_server_config(args):
+        sys.path.insert(0, os.getcwd())
+        name = ""
+        try:
+            name = args.server_config
+            pefim_server_conf = __import__(args.server_config)
+        except:
+            return (False, "No configuration file with the name %s in the path!" % name)
+        message = "The configuration file \"%s\" are missing the mandatory parameters: " % name
+        error = False
+        for param in WsgiApplication.SERVER_CONF_MANDITORY_PARAMETERS:
+            if not hasattr(pefim_server_conf, param):
+                message += " %s," % param
+                error = True
+        if error:
+            return (False, message)
+        return (True, "All is ok!")
+
+    @staticmethod
+    def validate_config(args):
+        sys.path.insert(0, os.getcwd())
+        name = ""
+        try:
+            name = args.config
+            pefim_server_conf = __import__(args.config)
+        except:
+            return (False, "No configuration file with the name %s in the path!" % name)
+        message = "The configuration file \"%s\" are missing the mandatory parameters: " % name
+        error = False
+        for param in WsgiApplication.CONF_MANDITORY_PARAMETERS:
+            if not hasattr(pefim_server_conf, param):
+                message += " %s," % param
+                error = True
+        if error:
+            return (False, message)
+        return (True, "All is ok!")
 
     @staticmethod
     def create_logger(filename, base_dir):
