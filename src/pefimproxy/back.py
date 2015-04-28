@@ -44,7 +44,11 @@ class SamlSP(service.Service):
             for key in config:
                 tmp_conf = config[key]
                 if calling_sp_entity_id is not None and ent_cat is None:
-                    ent_cat = set(tmp_conf["config"].metadata.entity_categories(calling_sp_entity_id))
+                    try:
+                        ent_cat = set(tmp_conf["config"].metadata.entity_categories(calling_sp_entity_id))
+                    except KeyError:
+                        logger.error("SP's metadata MUST contain an EntityDescriptor to define requested attributes. Entityid=%s" % calling_sp_entity_id)
+                        raise  # TODO: should not fail in operation and serve remaining SPs  when am incomplete SP in introduced.
                 if set(tmp_conf["config"].entity_category) == ent_cat:
                     self.sp = Base(tmp_conf["config"], state_cache=cache)
                     break
