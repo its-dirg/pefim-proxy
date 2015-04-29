@@ -36,6 +36,10 @@ to decide which SPs are put into the same group is the identical set of requeste
 by the assumption that requested attributes are defined by an EntitiyCategory element in the SP's EntityDescriptor.
 Thererfore each SP's metadata MUST contain an EntityDescriptor
 
+Configuring a single IDP insgtead of IDP discovery
+--------------------------------------------------
+If there is a single IDP, use the -e switch when starting the proxy server.
+
 IdP and SP configuration
 ========================
 pysaml2 configuration file for both SP and IdP. View an example in **example/pefim_proxy_conf.example**.
