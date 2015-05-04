@@ -25,6 +25,12 @@ def get_url(headers):
             break
     return url
 
+
+def get_dict(url):
+    req = parse_qs(url.split("?")[1])
+    return req
+
+
 def get_url_dict(headers):
     url = get_url(headers)
     req = parse_qs(url.split("?")[1])

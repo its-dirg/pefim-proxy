@@ -150,6 +150,9 @@ class SamlSP(service.Service):
                     req_args["nameid_format"] = NAMEID_FORMAT_PERSISTENT
 
             if encrypt_cert is not None:
+                encrypt_cert = encrypt_cert.replace("-----BEGIN CERTIFICATE-----\n", "")
+                encrypt_cert = encrypt_cert.replace("\n-----END CERTIFICATE-----\n", "")
+                encrypt_cert = encrypt_cert.replace("\n-----END CERTIFICATE-----", "")
                 spcertenc = SPCertEnc(x509_data=xmldsig.X509Data(x509_certificate=xmldsig.X509Certificate(
                     text=encrypt_cert)))
                 extensions = Extensions(extension_elements=[element_to_extension_element(spcertenc)])
@@ -174,7 +177,7 @@ class SamlSP(service.Service):
 
         # remember the request
         self.cache[_sid] = state_key
-        resp = self.response(_binding, ht_args, do_not_start_response=True)
+        resp = self.response(_binding, ht_args)
         return resp
 
     def authn_response(self, binding):

@@ -2,10 +2,12 @@ from os import path
 
 from saml2 import BINDING_HTTP_REDIRECT
 from saml2.entity_category.at_egov_pvp2 import EGOVTOKEN, CHARGEATTR
+from saml2.response import StatusRequestUnsupported
 
 from _util.TestHelper import create_cookie_header, get_url_dict, get_post_action_body
 from _util.TestIdP import TestIdP
 from _util.TestSp import TestSp
+from tests._util.TestHelper import get_dict
 
 
 __author__ = 'haho0032'
@@ -46,13 +48,19 @@ class PefimServerPEFIMTestCase(helper.CPWebCase):
     def test_swamid_backend_idp(self):
         global swamid_backend_idp_tid2
         test_sp = TestSp(self.BASEDIR, conf_name=self.BASEDIR + "/external/pvp2_config_test_sp.py")
+        test_idp = TestIdP(self.BASEDIR, conf_name=self.BASEDIR + "/external/swamid_config_test_idp.py")
         url = test_sp.create_authn_request()
+        sp_req = get_dict(url)
+        self.assertTrue(test_idp.verify_pefim_authn_request_SPCertEnc(sp_req["SAMLRequest"][0], BINDING_HTTP_REDIRECT),
+                "Not a valid SPCertEnc structure")
         self.getPage(url)
         self.assertStatus('303 See Other')
         req = get_url_dict(self.headers)
         self.assertTrue("SAMLRequest" in req)
         self.assertTrue("RelayState" in req)
-        test_idp = TestIdP(self.BASEDIR, conf_name=self.BASEDIR + "/external/swamid_config_test_idp.py")
+        sp_req = get_dict(url)
+        self.assertTrue(test_idp.verify_pefim_authn_request_SPCertEnc(req["SAMLRequest"][0], BINDING_HTTP_REDIRECT),
+                "Not a valid SPCertEnc structure")
         action, body = test_idp.handle_authn_request(req["SAMLRequest"][0], req["RelayState"][0], BINDING_HTTP_REDIRECT,
                                                      "testuser1")
         cookies = create_cookie_header(self.cookies)
@@ -81,13 +89,18 @@ class PefimServerPEFIMTestCase(helper.CPWebCase):
     def test_pvp2(self):
         global pvp2_tid2
         test_sp = TestSp(self.BASEDIR, conf_name=self.BASEDIR + "/external/pvp2_config_test_sp.py")
+        test_idp = TestIdP(self.BASEDIR, conf_name=self.BASEDIR + "/external/at_egov_pvp2_config_test_idp.py")
         url = test_sp.create_authn_request()
+        sp_req = get_dict(url)
+        self.assertTrue(test_idp.verify_pefim_authn_request_SPCertEnc(sp_req["SAMLRequest"][0], BINDING_HTTP_REDIRECT),
+                "Not a valid SPCertEnc structure")
         self.getPage(url)
         self.assertStatus('303 See Other')
         req = get_url_dict(self.headers)
         self.assertTrue("SAMLRequest" in req)
         self.assertTrue("RelayState" in req)
-        test_idp = TestIdP(self.BASEDIR, conf_name=self.BASEDIR + "/external/at_egov_pvp2_config_test_idp.py")
+        self.assertTrue(test_idp.verify_pefim_authn_request_SPCertEnc(req["SAMLRequest"][0], BINDING_HTTP_REDIRECT),
+                        "Not a valid SPCertEnc structure")
         action, body = test_idp.handle_authn_request(req["SAMLRequest"][0], req["RelayState"][0], BINDING_HTTP_REDIRECT,
                                                      "testuser3")
         cookies = create_cookie_header(self.cookies)
@@ -125,13 +138,19 @@ class PefimServerPEFIMTestCase(helper.CPWebCase):
     def test_pvp2charge(self):
         global pvp2charge_tid2
         test_sp = TestSp(self.BASEDIR, conf_name=self.BASEDIR + "/external/pvp2charge_config_test_sp.py")
+        test_idp = TestIdP(self.BASEDIR, conf_name=self.BASEDIR + "/external/at_egov_pvp2_config_test_idp.py")
         url = test_sp.create_authn_request()
+        sp_req = get_dict(url)
+        self.assertTrue(test_idp.verify_pefim_authn_request_SPCertEnc(sp_req["SAMLRequest"][0], BINDING_HTTP_REDIRECT),
+                "Not a valid SPCertEnc structure")
         self.getPage(url)
         self.assertStatus('303 See Other')
         req = get_url_dict(self.headers)
         self.assertTrue("SAMLRequest" in req)
         self.assertTrue("RelayState" in req)
-        test_idp = TestIdP(self.BASEDIR, conf_name=self.BASEDIR + "/external/at_egov_pvp2_config_test_idp.py")
+        sp_req = get_dict(url)
+        self.assertTrue(test_idp.verify_pefim_authn_request_SPCertEnc(req["SAMLRequest"][0], BINDING_HTTP_REDIRECT),
+                "Not a valid SPCertEnc structure")
         action, body = test_idp.handle_authn_request(req["SAMLRequest"][0], req["RelayState"][0], BINDING_HTTP_REDIRECT,
                                                      "testuser3")
         cookies = create_cookie_header(self.cookies)
@@ -165,12 +184,17 @@ class PefimServerPEFIMTestCase(helper.CPWebCase):
         #Call proxy from sp pvp2charge
         test_sp_pvp2charge = TestSp(self.BASEDIR, conf_name=self.BASEDIR + "/external/pvp2charge_config_test_sp.py")
         url = test_sp_pvp2charge.create_authn_request()
+        sp_req = get_dict(url)
         self.getPage(url)
         req_pvp2charge = get_url_dict(self.headers)
 
         #Get response from underlying IdP at_egov_pvp2
         test_idp_pvp2charge = TestIdP(self.BASEDIR, conf_name=self.BASEDIR + "/external/at_egov_pvp2_config_test_idp."
                                                                              "py")
+        sp_req = get_dict(url)
+        self.assertTrue(test_idp_pvp2charge.verify_pefim_authn_request_SPCertEnc(req_pvp2charge["SAMLRequest"][0],
+                                                                                 BINDING_HTTP_REDIRECT),
+                        "Not a valid SPCertEnc structure")
         action_pvp2charge, body_pvp2charge = test_idp_pvp2charge.handle_authn_request(
             req_pvp2charge["SAMLRequest"][0],
             req_pvp2charge["RelayState"][0],
@@ -186,6 +210,10 @@ class PefimServerPEFIMTestCase(helper.CPWebCase):
 
         #Get response from underlying IdP at_egov_pvp2
         test_idp_pvp2 = TestIdP(self.BASEDIR, conf_name=self.BASEDIR + "/external/at_egov_pvp2_config_test_idp.py")
+        sp_req = get_dict(url)
+        self.assertTrue(test_idp_pvp2.verify_pefim_authn_request_SPCertEnc(req_pvp2["SAMLRequest"][0],
+                                                                           BINDING_HTTP_REDIRECT),
+                        "Not a valid SPCertEnc structure")
         action_pvp2, body_pvp2 = test_idp_pvp2.handle_authn_request(req_pvp2["SAMLRequest"][0],
                                                                     req_pvp2["RelayState"][0],
                                                                     BINDING_HTTP_REDIRECT,
@@ -220,3 +248,19 @@ class PefimServerPEFIMTestCase(helper.CPWebCase):
         for key in _resp:
             self.assertTrue(key in resp.ava)
             self.assertTrue(resp.ava[key] == _resp[key])
+
+    def test_no_cert(self):
+        test_sp = TestSp(self.BASEDIR, conf_name=self.BASEDIR + "/external/pvp2_config_test_sp.py")
+        test_idp = TestIdP(self.BASEDIR, conf_name=self.BASEDIR + "/external/at_egov_pvp2_config_test_idp.py")
+        url = test_sp.create_authn_request(False)
+        self.getPage(url)
+        self.assertStatus('200 OK')
+        action, body = get_post_action_body(self.body)
+        self.assertTrue('http://test.sp.se:8900/acs/post' == action, "Must be designated for the right SP!")
+
+        try:
+            test_sp.eval_authn_response(body["SAMLResponse"])
+            self.assertTrue(False, "Supposed to throw StatusRequestUnsupported!")
+        except StatusRequestUnsupported as unsupported:
+            pass
+

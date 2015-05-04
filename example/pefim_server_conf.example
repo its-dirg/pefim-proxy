@@ -35,7 +35,7 @@ SESSION_OPTS = {
     #'session.timeout' : 900 #Never expires only when the session is closed.
 }
 
-#If value is not existing or False name will answer according to the metadata from the SP.
+#If value is not existing or False, the name id will be according to the metadata from the SP.
 #If set to True, the nameid will always be persistant.
 #No matter what setting, the nameid value will always be the same. That is based on the underlying idp as
 #a hash or encrypted.

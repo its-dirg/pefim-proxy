@@ -80,7 +80,7 @@ class Service(object):
         logger.debug("_operation: %s" % _dict)
         if not _dict:
             resp = BadRequest('Error parsing request or no request')
-            return resp(self.environ, self.start_response)
+            return resp
         else:
             try:
                 _relay_state = _dict["RelayState"]
@@ -93,7 +93,7 @@ class Service(object):
                 return func(_dict["SAMLRequest"], binding, _relay_state,
                             mtype="request")
 
-    def response(self, binding, http_args, do_not_start_response=False):
+    def response(self, binding, http_args):
         if binding == BINDING_HTTP_REDIRECT:
             for param, value in http_args["headers"]:
                 if param == "Location":
@@ -104,10 +104,7 @@ class Service(object):
         else:
             resp = Response(http_args["data"], headers=http_args["headers"])
 
-        if do_not_start_response:
-            return resp
-        else:
-            return resp(self.environ, self.start_response)
+        return resp
 
     def redirect(self, func):
         """ Expects a HTTP-redirect response """

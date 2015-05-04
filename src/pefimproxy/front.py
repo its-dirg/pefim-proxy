@@ -7,7 +7,7 @@ from saml2.httputil import Response
 from saml2.httputil import Redirect
 from saml2.httputil import Unauthorized
 from saml2.ident import IdentDB
-from saml2.s_utils import UnknownPrincipal
+from saml2.s_utils import UnknownPrincipal, MissingValue
 from saml2.s_utils import UnsupportedBinding
 from saml2.saml import NAMEID_FORMAT_PERSISTENT
 from saml2.server import Server
@@ -76,13 +76,18 @@ class SamlIDP(service.Service):
         resp_args = {}
         try:
             resp_args = self.idp.response_args(_authn_req)
-            _resp = None
+            if encrypt_cert is None:
+                exc = MissingValue("Element /samlp:AuthnRequest/samlp:extension/pefim:SPCertEnc/ds:KeyInfo/ "
+                                   "ds:X509Data/ds:X509Certificate missing")
+                _resp = self.idp.create_error_response(_authn_req.id, destination, exc, sign=True)
+            else:
+                _resp = None
         except UnknownPrincipal as excp:
             _resp = self.idp.create_error_response(_authn_req.id,
-                                                   destination, excp)
+                                                   destination, excp, sign=True)
         except UnsupportedBinding as excp:
             _resp = self.idp.create_error_response(_authn_req.id,
-                                                   destination, excp)
+                                                   destination, excp, sign=True)
 
         req_args = {}
         for key in ["subject", "name_id_policy", "conditions",

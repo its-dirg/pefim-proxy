@@ -1,6 +1,7 @@
 import urllib
 import os
 from saml2.config import Config
+from saml2.request import AuthnRequest
 from saml2.sigver import encrypt_cert_from_item
 from TestHelper import get_post_action_body
 from saml2.authn_context import AuthnBroker, authn_context_class_ref
@@ -114,6 +115,20 @@ class TestIdP(object):
         self.authn_req = None
         self.binding_out = None
         self.destination = None
+
+
+    def verify_pefim_authn_request_SPCertEnc(self, saml_request, binding):
+        try:
+            xml = self.idp.unravel(saml_request, binding, AuthnRequest.msgtype)
+            if xml.lower().find("begin certificate") > 0 or xml.lower().find("end certificate") > 0:
+                return False
+            xml_1 = xml.split("SPCertEnc", 1)
+            xml_2 = xml_1[1].split("KeyInfo", 1)
+            xml_3 = xml_2[1].split("X509Data", 1)
+            xml_4 = xml_3[1].split("X509Certificate", 1)
+            return len(xml_4) == 2
+        except Exception:
+            return False
 
     #binding = BINDING_HTTP_REDIRECT or BINDING_HTTP_POST
     def handle_authn_request(self, saml_request, relay_state, binding, userid):

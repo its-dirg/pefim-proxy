@@ -53,7 +53,7 @@ class TestSp(object):
         cert_str = osw.create_cert_signed_certificate(ca_cert_str, ca_key_str, req_cert_str)
         return cert_str, req_key_str
 
-    def create_authn_request(self):
+    def create_authn_request(self, generate_cert=True):
         try:
             #sid_ = sid()
             #self.outstanding_queries[sid_] = came_from
@@ -68,14 +68,21 @@ class TestSp(object):
             _binding, destination = self.sp.pick_binding("single_sign_on_service", self.bindings, "idpsso",
                                                          entity_id=self.entity_id)
 
-            self.cert_str, self.cert_key_str = self.generate_cert()
-            cert = {
-                        "cert": self.cert_str,
-                        "key": self.cert_key_str
-                    }
-            spcertenc = SPCertEnc(
-                x509_data=xmldsig.X509Data(x509_certificate=xmldsig.X509Certificate(text=self.cert_str)))
-            extensions = Extensions(extension_elements=[element_to_extension_element(spcertenc)])
+            if generate_cert:
+                self.cert_str, self.cert_key_str = self.generate_cert()
+                cert = {
+                            "cert": self.cert_str,
+                            "key": self.cert_key_str
+                        }
+                tmp_cert_str = self.cert_str.replace("-----BEGIN CERTIFICATE-----\n", "")
+                tmp_cert_str = tmp_cert_str.replace("\n-----END CERTIFICATE-----\n", "")
+                tmp_cert_str = tmp_cert_str.replace("\n-----END CERTIFICATE-----", "")
+                spcertenc = SPCertEnc(
+                    x509_data=xmldsig.X509Data(x509_certificate=xmldsig.X509Certificate(text=tmp_cert_str)))
+                extensions = Extensions(extension_elements=[element_to_extension_element(spcertenc)])
+            else:
+                cert = None
+                extensions = None
 
             try:
                 vorg_name = self.sp.vorg._name
@@ -105,6 +112,7 @@ class TestSp(object):
             raise Exception("Failed to construct the AuthnRequest: %s" % exc)
 
         return url
+
 
     def eval_authn_response(self, saml_response, binding=BINDING_HTTP_POST):
 
