@@ -9,26 +9,29 @@ Server configuration
 ====================
 There are 2 main config files:
 pefim_server_conf
+-----------------
   controls
   1. the be havior of the http server (server location, TLS)
   2. the session handling and
   3. NameID mapping from IDP to SP
 
-pefim_server_conf
-  This is a pure pysaml2 entity config file to control the SAML behavior of the
-  IDP and SP sides of the proxy.
-
-Read the comments in the files **example/pefim_server_conf.example** and **example/pefim_proxy_conf.example**.
-
 Certificate configuration
--------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^
 Key material for TLS endpoints is in SERVER_CERT, SERVER_KEY and CERT_CHAIN.
 SAML signatures are processed with the convential pysam2 configuration, e.g. key material for
 SAML signatures in is CONFIG['key_file'] and CONFIG['cert_file'], keys for signature validation
 are in metadata.
 
+
+pefim_proxy_conf
+----------------
+  This is a pure pysaml2 entity config file to control the SAML behavior of the
+  IDP and SP sides of the proxy.
+
+Read the comments in the files **example/pefim_server_conf.example** and **example/pefim_proxy_conf.example**.
+
 Metadata configuration
-----------------------
+^^^^^^^^^^^^^^^^^^^^^^
 The metadata location is CONFIG['metadata']. Pysaml2 allows for remote, local and multiple sources.
 
 Grouping SPs: The PEFIM model requires that multple SPs are mapped into a single SP to the IDP. The criterium
@@ -36,13 +39,33 @@ to decide which SPs are put into the same group is the identical set of requeste
 by the assumption that requested attributes are defined by an EntitiyCategory element in the SP's EntityDescriptor.
 Thererfore each SP's metadata MUST contain an EntityDescriptor
 
-Configuring a single IDP insgtead of IDP discovery
---------------------------------------------------
-If there is a single IDP, use the -e switch when starting the proxy server.
+Extra configuration
+^^^^^^^^^^^^^^^^^^^
+pefim_proxy_conf can be extended with the following configurations.
 
-IdP and SP configuration
-========================
-pysaml2 configuration file for both SP and IdP. View an example in **example/pefim_proxy_conf.example**.
+#Force the NameID to be persistent regardless of <NameIDFormat> values in the SP metadata.
+#If set to True, the nameid will always be persistent, i.e. the nameid value will always
+#be the same per SP, by hashing or encrypting the IDP's NameID.
+FORCE_PRESISTENT_NAMEID = True
+
+#If an hash algorithm is used instead of encryption (via the startup option) a dictionary can be used to store the
+#mapping for reverse lookups.
+#Database/dictionary with the underlying IDP's nameid(tid1) as key and the proxy generated nameid(tid2) as value.
+#If None or removed will no values be saved.
+TID1_TO_TID2 = None #{}
+
+#Database/dictionary with the underlying IDP's nameid(tid1) as value and the proxy generated nameid(tid2) as key.
+#If None or removed will no valus be saved.
+TID2_TO_TID1 = None #{}
+
+#Database/dictionary containing the encrypted tid2 value as key and initialization vector(iv) as value. If a
+#database/dictionary exists a new vi will be generated for each encryption performed.
+#If None or removed will no valus be saved and the same iv be used for each encryption.
+ENCMSG_TO_IV = None #{}
+
+Configuring a single IDP instead of IDP discovery
+-------------------------------------------------
+If there is a single IDP, use the -e switch when starting the proxy server.
 
 *****************************
 PEFIM proxy command line args

@@ -114,23 +114,3 @@ CONFIG = {
         "loglevel": "debug",
     }
 }
-
-#Force the NameID to be persistent regardless of <NameIDFormat> values in the SP metadata.
-#If set to True, the nameid will always be persistent, i.e. the nameid value will always
-#be the same per SP, by hashing or encrypting the IDP's NameID.
-# FORCE_PRESISTENT_NAMEID = True
-
-#If an hash algorithm is used instead of encryption (via the startup option) a dictionary can be used to store the
-#mapping for reverse lookups.
-#Database/dictionary with the underlying IDP's nameid(tid1) as key and the proxy generated nameid(tid2) as value.
-#If None or removed will no values be saved.
-#TID1_TO_TID2 = None #{}
-
-#Database/dictionary with the underlying IDP's nameid(tid1) as value and the proxy generated nameid(tid2) as key.
-#If None or removed will no valus be saved.
-#TID2_TO_TID1 = None #{}
-
-#Database/dictionary containing the encrypted tid2 value as key and initialization vector(iv) as value. If a
-#database/dictionary exists a new vi will be generated for each encryption performed.
-#If None or removed will no valus be saved and the same iv be used for each encryption.
-#ENCMSG_TO_IV = None #{}
