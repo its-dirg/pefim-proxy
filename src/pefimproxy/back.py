@@ -15,7 +15,7 @@ from saml2.httputil import ServiceError
 from saml2.httputil import SeeOther
 from saml2.httputil import Unauthorized
 from saml2.response import VerificationError, AuthnResponse
-from saml2.s_utils import UnknownPrincipal
+from saml2.s_utils import UnknownPrincipal, MissingValue, Unsupported, OtherError
 from saml2.s_utils import UnsupportedBinding
 
 from service import BINDING_MAP
@@ -47,9 +47,11 @@ class SamlSP(service.Service):
                     try:
                         ent_cat = set(tmp_conf["config"].metadata.entity_categories(calling_sp_entity_id))
                     except KeyError:
-                        logger.error("SP's metadata MUST contain an EntityDescriptor to define requested attributes. Entityid=%s" % calling_sp_entity_id)
-                        raise  # TODO: should not fail in operation and serve remaining SPs  when am incomplete SP in introduced.
-                if set(tmp_conf["config"].entity_category) == ent_cat:
+                        logger.error("SP's metadata MUST contain an EntityDescriptor to define requested attributes. "
+                                     "Entityid=%s" % calling_sp_entity_id)
+                        raise OtherError("Metadata is missing element /samlp:EntityDescriptor/samlp:Extensions/samlp:"
+                                     "EntityAttributes")
+                if key != "default" and set(tmp_conf["config"].entity_category) == ent_cat:
                     self.sp = Base(tmp_conf["config"], state_cache=cache)
                     break
                 elif ent_cat is None:
@@ -59,7 +61,8 @@ class SamlSP(service.Service):
                 self.sp = Base(config["default"]["config"], state_cache=cache)
             else:
                 logger.error("UnsupportedBinding: %s" % (ent_cat,))
-                self.sp_error_resp = ServiceError("UnsupportedEntityCategory: %" % (ent_cat,))
+                raise OtherError("Entity category in metadata is not supported /samlp:EntityDescriptor/"
+                                   "samlp:Extensions/samlp: EntityAttributes")
         #self.sp = Base(config, state_cache=cache)
         self.environ = environ
         self.start_response = start_response

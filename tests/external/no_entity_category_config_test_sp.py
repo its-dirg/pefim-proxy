@@ -21,7 +21,7 @@ else:
 BASEDIR = os.path.abspath(os.path.dirname(__file__))
 
 #Where the SP is deployed (external interface, i.e. the front-facig proxy).
-BASE= "http://test.sp.se:8900"
+BASE= "http://test_no_ent_cat.sp.se:8900"
 
 # Method that generates the cert to be added to SPCertEncType in the authn request.
 # You can change this after your needs.
@@ -29,9 +29,8 @@ def generate_cert():
     pass
 
 CONFIG = {
-    "entityid": "http://test_transient.sp.se/sp.xml",
+    "entityid": "http://test_no_ent_cat.sp.se/sp.xml",
     "description": "PEFIM test SP",
-    "entity_category": [PVP2],
     #Here you configure the method to be used for generating certificates.
     "generate_cert_func": generate_cert,
     "service": {
@@ -58,7 +57,7 @@ CONFIG = {
             },
             "required_attributes": ["pvp-version", "pvp-principal-name", ],
             "optional_attributes": ["pvp-givenname", "pvp-birthdate", "pvp-userid", ],
-            "name_id_format": [NAMEID_FORMAT_TRANSIENT],
+            "name_id_format": [NAMEID_FORMAT_PERSISTENT],
         },
     },
     "debug": 1,

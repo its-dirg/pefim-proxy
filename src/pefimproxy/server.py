@@ -360,8 +360,7 @@ class WsgiApplication(object, ):
         # Will signed the response by default
         resp = _idp.construct_authn_response(identity, userid="dummyuser",
                                              authn=_authn, name_id=None, resp_args=resp_args,
-                                             relay_state=relay_state, sign_response=True,
-                                             org_resp=response, org_xml_response=org_response)
+                                             relay_state=relay_state, org_resp=response, org_xml_response=org_response)
 
         return resp
 

@@ -7,7 +7,7 @@ from saml2.httputil import Response
 from saml2.httputil import Redirect
 from saml2.httputil import Unauthorized
 from saml2.ident import IdentDB
-from saml2.s_utils import UnknownPrincipal, MissingValue
+from saml2.s_utils import UnknownPrincipal, MissingValue, OtherError
 from saml2.s_utils import UnsupportedBinding
 from saml2.saml import NAMEID_FORMAT_PERSISTENT
 from saml2.server import Server
@@ -32,6 +32,9 @@ class SamlIDP(service.Service):
             self.idp = Server(config=conf, cache=cache)
         else:
             self.idp = idp
+        self.sign_response = self.idp.config.getattr("sign_response", "idp")
+        if self.sign_response is None:
+            self.sign_response = True
         self.incomming = incomming
         self.tid1_to_tid2 = tid1_to_tid2
         self.tid2_to_tid1 = tid2_to_tid1
@@ -79,15 +82,15 @@ class SamlIDP(service.Service):
             if encrypt_cert is None:
                 exc = MissingValue("Element /samlp:AuthnRequest/samlp:extension/pefim:SPCertEnc/ds:KeyInfo/ "
                                    "ds:X509Data/ds:X509Certificate missing")
-                _resp = self.idp.create_error_response(_authn_req.id, destination, exc, sign=True)
+                _resp = self.idp.create_error_response(_authn_req.id, destination, exc, sign=self.sign_response)
             else:
                 _resp = None
         except UnknownPrincipal as excp:
             _resp = self.idp.create_error_response(_authn_req.id,
-                                                   destination, excp, sign=True)
+                                                   destination, excp, sign=self.sign_response)
         except UnsupportedBinding as excp:
             _resp = self.idp.create_error_response(_authn_req.id,
-                                                   destination, excp, sign=True)
+                                                   destination, excp, sign=self.sign_response)
 
         req_args = {}
         for key in ["subject", "name_id_policy", "conditions",
@@ -137,8 +140,17 @@ class SamlIDP(service.Service):
             logger.debug("HTTPargs: %s" % http_args)
             return self.response(_binding, http_args)
         else:
-            return self.incomming(_dict, self, self.environ,
-                                  self.start_response, _request["RelayState"])
+            try:
+                return self.incomming(_dict, self, self.environ,
+                                      self.start_response, _request["RelayState"])
+            except OtherError as exc:
+                _resp = self.idp.create_error_response(_dict["authn_req"].id, _dict["resp_args"]["destination"], exc,
+                                               sign=self.sign_response)
+                http_args = self.idp.apply_binding(_binding, "%s" % _resp,
+                                                   _dict["resp_args"]["destination"],
+                                                   _request["RelayState"], response=True)
+                return self.response(_binding, http_args)
+
 
     def get_tid1_resp(self, org_resp):
         tid1 = org_resp.assertion.subject.name_id.text
@@ -185,7 +197,7 @@ class SamlIDP(service.Service):
         return self.idp.ident.find_nameid(userid, **kwa)
 
     def construct_authn_response(self, identity, userid, authn, resp_args,
-                                 relay_state, name_id=None, sign_response=True, org_resp=None, org_xml_response=None):
+                                 relay_state, name_id=None, org_resp=None, org_xml_response=None):
         """
 
         :param identity:
@@ -247,7 +259,7 @@ class SamlIDP(service.Service):
             _resp.assertion.advice = advice
         #_resp.assertion = []
 
-        if sign_response:
+        if self.sign_response:
             _class_sign = class_name(_resp)
             _resp.signature = pre_signature_part(_resp.id, self.idp.sec.my_cert, 1)
             _resp = self.idp.sec.sign_statement(_resp, _class_sign, node_id=_resp.id)

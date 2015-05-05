@@ -35,7 +35,7 @@ DISCO_SRV = "https://md.nordu.net/role/idp.ds"
 SP_ENTITY_CATEGORIES = [{"name": "pvp2", "entcat": [PVP2]}, {"name": "pvp2charge", "entcat": [PVP2CHARGE]}]
 
 #None if no default SP should be used, otherwise a list. The list may be empty.
-SP_ENTITY_CATEGORIES_DEFAULT = []
+SP_ENTITY_CATEGORIES_DEFAULT = None #[]
 
 CONFIG = {
     "entityid": "%sproxy.xml" % BASE,
@@ -91,7 +91,8 @@ CONFIG = {
             BASEDIR + "/external/pvp2_config_test_sp.xml",
             BASEDIR + "/external/at_egov_pvp2_config_test_idp.xml",
             BASEDIR + "/external/swamid_config_test_idp.xml",
-            BASEDIR + "/external/pvp2charge_config_test_sp.xml"
+            BASEDIR + "/external/pvp2charge_config_test_sp.xml",
+            BASEDIR + "/external/no_entity_category_config_test_sp.xml"
         ]
     },
     "organization": {
