@@ -29,7 +29,6 @@ class TargetIdTestCase(unittest.TestCase):
         tid2_dict = tih.tid2_dict(tid2_json)
         assert tid2_dict["tid1"] == self.nameid1_text, "Cannot verify tid1."
         assert tid2_dict["sp_entityid"] == self.sp_entity_id, "Cannot verify SP entity id."
-        assert tid2_dict["uuid"] is not None and len(tid2_dict["uuid"]) > 0, "Cannot verify SP entity id."
 
     def test_hash_tid1(self):
         hash_verify = {'md5': 32, 'sha1': 40, 'sha224': 56, 'sha256': 64, 'sha384': 96, 'sha512': 128}
@@ -58,7 +57,6 @@ class TargetIdTestCase(unittest.TestCase):
         tid2_dict = tih.tid2_decrypt(tid2_encrypted)
         assert tid2_dict["tid1"] == self.nameid1_text, "Cannot verify tid1."
         assert tid2_dict["sp_entityid"] == self.sp_entity_id, "Cannot verify SP entity id."
-        assert tid2_dict["uuid"] is not None and len(tid2_dict["uuid"]) > 0, "Cannot verify SP entity id."
 
     def test_encrypt_alg_1(self):
         for alg in TargetIdHandler.AES_ALG:
@@ -69,7 +67,6 @@ class TargetIdTestCase(unittest.TestCase):
             tid2_dict = tih.tid2_decrypt(tid2_encrypted)
             assert tid2_dict["tid1"] == self.nameid1_text, "Cannot verify tid1."
             assert tid2_dict["sp_entityid"] == self.sp_entity_id, "Cannot verify SP entity id."
-            assert tid2_dict["uuid"] is not None and len(tid2_dict["uuid"]) > 0, "Cannot verify SP entity id."
 
     def test_encrypt_alg_2(self):
         for alg in TargetIdHandler.AES_ALG:
@@ -82,7 +79,6 @@ class TargetIdTestCase(unittest.TestCase):
             tid2_dict = tih.tid2_decrypt(tid2_encrypted)
             assert tid2_dict["tid1"] == self.nameid1_text, "Cannot verify tid1."
             assert tid2_dict["sp_entityid"] == self.sp_entity_id, "Cannot verify SP entity id."
-            assert tid2_dict["uuid"] is not None and len(tid2_dict["uuid"]) > 0, "Cannot verify uuid."
 
     def test_encrypt_alg_3(self):
         for alg in TargetIdHandler.AES_ALG:
@@ -95,11 +91,10 @@ class TargetIdTestCase(unittest.TestCase):
             tid2_encrypted_2 = tih.tid2_encrypt(tid1, self.sp_entity_id)
             tid2_dict_1 = tih.tid2_decrypt(tid2_encrypted_1)
             tid2_dict_2 = tih.tid2_decrypt(tid2_encrypted_2)
-            assert tid2_encrypted_1 != tid2_encrypted_2, "Two encryption of the same data must never be the same!"
+            assert tid2_encrypted_1 == tid2_encrypted_2, "Two encryption of the same data must always be the same!"
             assert tid2_dict_1["tid1"] == tid2_dict_2["tid1"] == self.nameid1_text, "Cannot verify tid1."
             assert tid2_dict_1["sp_entityid"] == tid2_dict_2["sp_entityid"] == self.sp_entity_id, \
                 "Cannot verify SP entity id."
-            assert tid2_dict_1["uuid"] != tid2_dict_2["uuid"], "Cannot verify uuid."
 
     def test_encrypt_alg_4(self):
         for alg in TargetIdHandler.AES_ALG:
@@ -113,8 +108,7 @@ class TargetIdTestCase(unittest.TestCase):
             tid2_encrypted_2 = tih.tid2_encrypt(tid1, self.sp_entity_id, iv=iv)
             tid2_dict_1 = tih.tid2_decrypt(tid2_encrypted_1)
             tid2_dict_2 = tih.tid2_decrypt(tid2_encrypted_2)
-            assert tid2_encrypted_1 != tid2_encrypted_2, "Two encryption of the same data must never be the same!"
+            assert tid2_encrypted_1 == tid2_encrypted_2, "Two encryption of the same data must always be the same!"
             assert tid2_dict_1["tid1"] == tid2_dict_2["tid1"] == self.nameid1_text, "Cannot verify tid1."
             assert tid2_dict_1["sp_entityid"] == tid2_dict_2["sp_entityid"] == self.sp_entity_id, \
                 "Cannot verify SP entity id."
-            assert tid2_dict_1["uuid"] != tid2_dict_2["uuid"], "Cannot verify uuid."

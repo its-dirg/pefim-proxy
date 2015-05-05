@@ -13,7 +13,7 @@ from argparse import Namespace
 
 from _util.TestHelper import create_cookie_header, get_url_dict, get_post_action_body
 from _util.TestIdP import TestIdP
-import pefim_server_conf_local
+import pefim_server_conf_default
 from pefimproxy.server import WsgiApplication
 
 
@@ -22,7 +22,7 @@ class PefimServerSPTestCase(helper.CPWebCase):
     ARGS = Namespace(debug=False,
                      entityid="http://test.idp.se:1111/TestIdP.xml",
                      config="pefim_proxy_conf_local",
-                     server_config="pefim_server_conf_local")
+                     server_config="pefim_server_conf_default")
 
     WSGI_APP = WsgiApplication(ARGS, base_dir=path.dirname(path.realpath(__file__)) + "/../")
 
@@ -31,7 +31,7 @@ class PefimServerSPTestCase(helper.CPWebCase):
         return PefimServerSPTestCase.WSGI_APP.run_server(environ, start_response)
 
     def setup_server():
-        cherrypy.tree.graft(SessionMiddleware(PefimServerSPTestCase.application, pefim_server_conf_local.SESSION_OPTS),
+        cherrypy.tree.graft(SessionMiddleware(PefimServerSPTestCase.application, pefim_server_conf_default.SESSION_OPTS),
                             '/')
         pass
 

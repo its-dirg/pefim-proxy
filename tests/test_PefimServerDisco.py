@@ -4,7 +4,7 @@ __author__ = 'haho0032'
 
 import cherrypy
 from cherrypy.test import helper
-import pefim_server_conf_local
+import pefim_server_conf_default
 from beaker.middleware import SessionMiddleware
 from pefimproxy.server import WsgiApplication
 from argparse import Namespace
@@ -18,7 +18,7 @@ class DiscoTestCase(helper.CPWebCase):
     ARGS = Namespace(debug=False,
                      entityid=None,
                      config="pefim_proxy_conf_local",
-                     server_config="pefim_server_conf_local")
+                     server_config="pefim_server_conf_default")
 
     WSGI_APP = WsgiApplication(ARGS, base_dir=path.dirname(path.realpath(__file__)) +
                                                                        "/../")
@@ -28,7 +28,7 @@ class DiscoTestCase(helper.CPWebCase):
         return DiscoTestCase.WSGI_APP.run_server(environ, start_response)
 
     def setup_server():
-        cherrypy.tree.graft(SessionMiddleware(DiscoTestCase.application, pefim_server_conf_local.SESSION_OPTS), '/')
+        cherrypy.tree.graft(SessionMiddleware(DiscoTestCase.application, pefim_server_conf_default.SESSION_OPTS), '/')
 
     setup_server = staticmethod(setup_server)
 

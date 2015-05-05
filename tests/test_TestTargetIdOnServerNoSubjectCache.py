@@ -13,7 +13,7 @@ __author__ = 'haho0032'
 import cherrypy
 import os
 from cherrypy.test import helper
-import pefim_server_conf_local
+import pefim_server_conf_default
 from beaker.middleware import SessionMiddleware
 from pefimproxy.server import WsgiApplication
 from argparse import Namespace
@@ -23,8 +23,8 @@ class TargetIdOnServerNoSubjectCacheTestCase(helper.CPWebCase):
     BASEDIR = os.path.abspath(os.path.dirname(__file__))
     ARGS = Namespace(debug=False,
                      entityid="http://test.idp.se:1111/TestIdP.xml",
-                     config="pefim_proxy_conf_local",
-                     server_config="pefim_server_conf_hash"
+                     config="pefim_proxy_conf_hash",
+                     server_config="pefim_server_conf_default"
     )
 
     WSGI_APP = WsgiApplication(ARGS, base_dir=path.dirname(path.realpath(__file__)) + "/../")
@@ -35,7 +35,7 @@ class TargetIdOnServerNoSubjectCacheTestCase(helper.CPWebCase):
         return TargetIdOnServerNoSubjectCacheTestCase.WSGI_APP.run_server(environ, start_response)
 
     def setup_server():
-        cherrypy.tree.graft(SessionMiddleware(TargetIdOnServerNoSubjectCacheTestCase.application, pefim_server_conf_local.SESSION_OPTS),
+        cherrypy.tree.graft(SessionMiddleware(TargetIdOnServerNoSubjectCacheTestCase.application, pefim_server_conf_default.SESSION_OPTS),
                             '/')
         pass
 
@@ -55,6 +55,6 @@ class TargetIdOnServerNoSubjectCacheTestCase(helper.CPWebCase):
         resp = test_sp.eval_authn_response(body["SAMLResponse"])
         tid1 = self.WSGI_APP.get_tid1(resp.assertion.subject.name_id.text)
         self.assertTrue(tid1 == "testuser3", "Verify that tid1 is ok!")
-        tid2_hash = self.WSGI_APP.get_tid2("testuser3")
+        tid2_hash = self.WSGI_APP.get_tid2(tid1)
         self.assertTrue(tid2_hash == resp.assertion.subject.name_id.text, "Should be able to get tid2_enc from tid1.")
 

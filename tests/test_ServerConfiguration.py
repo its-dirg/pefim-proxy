@@ -10,10 +10,10 @@ class ServerConfigurationTestCase(unittest.TestCase):
     def test_server_config_files_ok(self):
         valid, message = WsgiApplication.validate_server_config(
             Namespace(
-                server_config="pefim_server_conf_local"
+                server_config="pefim_server_conf_default"
             )
         )
-        assert valid, "Missing the configuration file pefim_server_conf_local.py"
+        assert valid, "Missing the configuration file pefim_server_conf_default.py"
 
     def test_server_config_missing_file(self):
         valid, message = WsgiApplication.validate_server_config(

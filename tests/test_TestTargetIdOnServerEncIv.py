@@ -13,7 +13,7 @@ __author__ = 'haho0032'
 import cherrypy
 import os
 from cherrypy.test import helper
-import pefim_server_conf_local
+import pefim_server_conf_default
 from beaker.middleware import SessionMiddleware
 from pefimproxy.server import WsgiApplication
 from argparse import Namespace
@@ -23,8 +23,8 @@ class TargetIdOnServerEncIvTestCase(helper.CPWebCase):
     BASEDIR = os.path.abspath(os.path.dirname(__file__))
     ARGS = Namespace(debug=False,
                      entityid="http://test.idp.se:1111/TestIdP.xml",
-                     config="pefim_proxy_conf_local",
-                     server_config="pefim_server_conf_enc_iv"
+                     config="pefim_proxy_conf_enc_iv",
+                     server_config="pefim_server_conf_default"
     )
 
     WSGI_APP = WsgiApplication(ARGS, base_dir=path.dirname(path.realpath(__file__)) + "/../")
@@ -35,7 +35,7 @@ class TargetIdOnServerEncIvTestCase(helper.CPWebCase):
         return TargetIdOnServerEncIvTestCase.WSGI_APP.run_server(environ, start_response)
 
     def setup_server():
-        cherrypy.tree.graft(SessionMiddleware(TargetIdOnServerEncIvTestCase.application, pefim_server_conf_local.SESSION_OPTS),
+        cherrypy.tree.graft(SessionMiddleware(TargetIdOnServerEncIvTestCase.application, pefim_server_conf_default.SESSION_OPTS),
                             '/')
         pass
 

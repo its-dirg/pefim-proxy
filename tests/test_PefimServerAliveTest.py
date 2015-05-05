@@ -1,10 +1,10 @@
 from os import path
+from tests import pefim_server_conf_default
 
 __author__ = 'haho0032'
 
 import cherrypy
 from cherrypy.test import helper
-import pefim_server_conf_local
 from beaker.middleware import SessionMiddleware
 from pefimproxy.server import WsgiApplication
 from argparse import Namespace
@@ -15,7 +15,7 @@ class AliveTestCase(helper.CPWebCase):
     ARGS = Namespace(debug=False,
                      entityid=None,
                      config="pefim_proxy_conf_local",
-                     server_config="pefim_server_conf_local")
+                     server_config="pefim_server_conf_default")
 
     WSGI_APP = WsgiApplication(ARGS, base_dir=path.dirname(path.realpath(__file__)) + "/../")
 
@@ -24,7 +24,7 @@ class AliveTestCase(helper.CPWebCase):
         return AliveTestCase.WSGI_APP.run_server(environ, start_response)
 
     def setup_server():
-        cherrypy.tree.graft(SessionMiddleware(AliveTestCase.application, pefim_server_conf_local.SESSION_OPTS), '/')
+        cherrypy.tree.graft(SessionMiddleware(AliveTestCase.application, pefim_server_conf_default.SESSION_OPTS), '/')
 
     setup_server = staticmethod(setup_server)
 

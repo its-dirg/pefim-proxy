@@ -108,27 +108,24 @@ class WsgiApplication(object, ):
         self.urls.extend(sp.register_endpoints())
         
         try:
-            self.tid1_to_tid2 = server_conf.TID1_TO_TID2
+            self.tid1_to_tid2 = config.TID1_TO_TID2
         except:
             self.tid1_to_tid2 = None
         try:
-            self.tid2_to_tid1 = server_conf.TID2_TO_TID1
+            self.tid2_to_tid1 = config.TID2_TO_TID1
         except:
             self.tid2_to_tid1 = None
         try:
-            self.encmsg_to_iv = server_conf.ENCMSG_TO_IV
+            self.encmsg_to_iv = config.ENCMSG_TO_IV
         except:
             self.encmsg_to_iv = None
 
         try:
-            self.force_persistant_nameid = server_conf.FORCE_PRESISTANT_NAMEID
+            self.force_persistant_nameid = config.FORCE_PRESISTANT_NAMEID
         except:
             self.force_persistant_nameid = False
 
-        try:
-            self.force_no_userid_subject_cacheing = server_conf.FORCE_NO_USERID_SUBJECT_CACHEING
-        except:
-            self.force_no_userid_subject_cacheing = False
+        self.force_no_userid_subject_cacheing = False
 
         samlidp = self.create_SamlIDP(None, None, None)
         self.urls.extend(samlidp.register_endpoints())

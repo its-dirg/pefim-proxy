@@ -51,8 +51,7 @@ class TargetIdHandler(object):
     def tid2_json(self, tid1, sp_entityid):
         tid2_dict = {
             "tid1": tid1,
-            "sp_entityid": sp_entityid,
-            "uuid": uuid4().urn
+            "sp_entityid": sp_entityid
         }
         return json.dumps(tid2_dict)
 

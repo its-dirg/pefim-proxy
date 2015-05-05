@@ -9,7 +9,9 @@ from saml2.extension.idpdisc import BINDING_DISCO
 from saml2.saml import NAME_FORMAT_URI
 from saml2.saml import NAMEID_FORMAT_TRANSIENT
 from saml2.saml import NAMEID_FORMAT_PERSISTENT
-from tests import pefim_server_conf_local
+from tests import pefim_server_conf_default
+
+xmlsec_path = None
 
 try:
     from saml2.sigver import get_xmlsec_binary
@@ -28,7 +30,7 @@ def full_path(local_file):
     return os.path.join(BASEDIR, local_file)
 
 
-BASE = pefim_server_conf_local.ISSUER + "%s"
+BASE = pefim_server_conf_default.ISSUER + "%s"
 
 DISCO_SRV = "https://md.nordu.net/role/idp.ds"
 

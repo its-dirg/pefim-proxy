@@ -15,7 +15,7 @@ __author__ = 'haho0032'
 import cherrypy
 import os
 from cherrypy.test import helper
-import pefim_server_conf_local
+import pefim_server_conf_default
 from beaker.middleware import SessionMiddleware
 from pefimproxy.server import WsgiApplication
 from argparse import Namespace
@@ -26,7 +26,7 @@ class PefimServerPEFIMTestCase(helper.CPWebCase):
     ARGS = Namespace(debug=False,
                      entityid="http://test.idp.se:1111/TestIdP.xml",
                      config="pefim_proxy_conf_local",
-                     server_config="pefim_server_conf_local",
+                     server_config="pefim_server_conf_default",
                      e_alg="aes_128_cbc",
                      key=os.urandom(16),
                      iv=os.urandom(16)
@@ -39,7 +39,7 @@ class PefimServerPEFIMTestCase(helper.CPWebCase):
         return PefimServerPEFIMTestCase.WSGI_APP.run_server(environ, start_response)
 
     def setup_server():
-        cherrypy.tree.graft(SessionMiddleware(PefimServerPEFIMTestCase.application, pefim_server_conf_local.SESSION_OPTS),
+        cherrypy.tree.graft(SessionMiddleware(PefimServerPEFIMTestCase.application, pefim_server_conf_default.SESSION_OPTS),
                             '/')
         pass
 
