@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns0:AuthnRequest xmlns:ns0="urn:oasis:names:tc:SAML:2.0:protocol" xmlns:ns1="urn:oasis:names:tc:SAML:2.0:assertion" xmlns:ns2="urn:net:eustix:names:tc:PEFIM:0.0:assertion" xmlns:ns3="http://www.w3.org/2000/09/xmldsig#" AssertionConsumerServiceURL="http://test.sp.se:8900/acs/post" Destination="https://localhost:8999/sso/redirect" ID="_ea6915c0fb454cce8e7618c7120e6946" IssueInstant="xxx" ProtocolBinding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Version="2.0"> <ns1:Issuer>http://test.sp.se/sp.xml</ns1:Issuer><ns0:Extensions><ns2:SPCertEnc><ns3:KeyInfo><ns3:X509Data><ns3:X509Certificate>MIID3DCCAsSgAwIBAgIJAI4Pki06znISMA0GCSqGSIb3DQEBCwUAMIGBMQswCQYD
+VQQGEwJBVDEPMA0GA1UECAwGVmllbm5hMQ8wDQYDVQQHDAZWaWVubmExITAfBgNV
+BAoMGENyeXB0YXMgaXQtU2VjdXJpdHkgR21iSDEPMA0GA1UECwwGQ3J5b25zMRww
+GgYDVQQDDBNQZUZJTSBTaG9ydCBUZXJtIENBMB4XDTE1MDQyOTE1MjQwMloXDTE2
+MDQyODE1MjQwMlowTzELMAkGA1UEBhMCQVQxDzANBgNVBAcMBlZpZW5uYTEhMB8G
+A1UECgwYQ3J5cHRhcyBpdC1TZWN1cml0eSBHbWJIMQwwCgYDVQQDDAM0NjcwggEi
+MA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDdWtGDA4CP1gMWxt98HzyT0z/h
+dne9cTelZ4PNDnPt+lhPYrEG10WF1zgZXmr1oRbOMgtwJASlDbc5TQVUzOdlDKf2
+aTWStKAN3Y8Ly7tmHfA0GKQXqE5tS4HaE583HKsgs+Lz6SCnNz//E5f1O93IY49q
+cQZgy8ERPIYXaluXTkMOWZDNUmKjP/RU5OSeTIzoEuOA5MPE8m5B6h7Fuk+TW7DM
+auF/RAu0/ANDq/zW6H/PwRw7rRBtsZ5LGAvKapdON59QqMfcuwPZYGhJNnHWtBDR
+9FPuun/yVEF8MSdJHPcSHuUZyxuXcARhk3idQyEwfgmgbIITBTixL/io2H1lAgMB
+AAGjgYcwgYQwCQYDVR0TBAIwADAsBglghkgBhvhCAQ0EHxYdT3BlblNTTCBHZW5l
+cmF0ZWQgQ2VydGlmaWNhdGUwHQYDVR0OBBYEFIkNOCnfihtkqg74+NjysAhUlLzl
+MB8GA1UdIwQYMBaAFCxkXBiOg0RDk+egva0/Ww6s8+SxMAkGA1UdEQQCMAAwDQYJ
+KoZIhvcNAQELBQADggEBALP0zeH0gjKTeI1XMku/BaEyPOsfV1bpBNjD30uSybVu
+DRVWvyoGs4DlPCgiHtZUjODIogyHwrhLGhMWYneuKfgnnQ39Ve7BRbgxdx161MtQ
+ZYtpnxkdyKL6/WRZtRV8D6vWv3VKMWbwJAOTT4gRHrHPEH1fQZvG9Wpli8802OKE
+9EzA73CHefFn863zOGTAxVOMFXQ1kTGLajVq4KPYxni7jEyJwvGNP6dNX5MmX4lt
+MxeyuJy8PN2ieNy9vFqdtvTZEXl9fq3fm2fOMGVNXQYn73BXRD5I1HKt37QW9AIO
+yVSB8xx11Js3Xmm3Nx/iSce5sdO/oVet6+XAFvpiF9w=</ns3:X509Certificate></ns3:X509Data></ns3:KeyInfo></ns2:SPCertEnc></ns0:Extensions><ns0:NameIDPolicy AllowCreate="1" /></ns0:AuthnRequest>

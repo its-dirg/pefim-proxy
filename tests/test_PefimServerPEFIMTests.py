@@ -264,3 +264,15 @@ class PefimServerPEFIMTestCase(helper.CPWebCase):
         except StatusRequestUnsupported as unsupported:
             pass
 
+    def test_aaa_schib_idp_req_1(self):
+        test_sp = TestSp(self.BASEDIR)
+        test_idp = TestIdP(self.BASEDIR)
+        url = test_sp.create_authn_request_file("/xml_authn_req/schib_authn_req_1.xml")
+        sp_req = get_dict(url)
+        self.assertTrue(test_idp.verify_pefim_authn_request_SPCertEnc(sp_req["SAMLRequest"][0], BINDING_HTTP_REDIRECT),
+                "Not a valid SPCertEnc structure")
+        self.getPage(url)
+        self.assertStatus('303 See Other')
+        req = get_url_dict(self.headers)
+        self.assertTrue("SAMLRequest" in req)
+        self.assertTrue("RelayState" in req)

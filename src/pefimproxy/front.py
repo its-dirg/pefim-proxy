@@ -80,7 +80,7 @@ class SamlIDP(service.Service):
         try:
             resp_args = self.idp.response_args(_authn_req)
             if encrypt_cert is None:
-                exc = MissingValue("Element /samlp:AuthnRequest/samlp:extension/pefim:SPCertEnc/ds:KeyInfo/ "
+                exc = MissingValue("Element /samlp:AuthnRequest/samlp:extensions/pefim:SPCertEnc/ds:KeyInfo/ "
                                    "ds:X509Data/ds:X509Certificate missing")
                 _resp = self.idp.create_error_response(_authn_req.id, destination, exc, sign=self.sign_response)
             else:

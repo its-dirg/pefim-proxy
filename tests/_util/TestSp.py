@@ -10,8 +10,9 @@ __author__ = 'haho0032'
 from saml2 import BINDING_HTTP_REDIRECT, BINDING_HTTP_POST, BINDING_HTTP_ARTIFACT, element_to_extension_element
 from saml2.client import Saml2Client
 from saml2 import s_utils
-from saml2.md import Extensions
+from saml2.samlp import Extensions
 import xmldsig
+import datetime
 import os
 
 
@@ -112,6 +113,36 @@ class TestSp(object):
             raise Exception("Failed to construct the AuthnRequest: %s" % exc)
 
         return url
+
+    def create_authn_request_file(self, file):
+        try:
+            file = open(self.base_dir + file, 'r')
+            msg_str = ""
+            for line in file:
+                msg_str += line
+            msg_str = msg_str.replace("IssueInstant=\"xxx\"",
+                                      "IssueInstant=\"" + str(datetime.datetime.now()).split('.')[0].
+                                      replace(" ", "T") + "Z" + "\"")
+            idps = self.sp.metadata.with_descriptor("idpsso")
+            if len(idps) == 1:
+                self.entity_id = idps.keys()[0]
+            elif len(idps) > 1:
+                raise Exception("TestSp only supports 1 idp in the metadata!")
+            else:
+                Exception("No IdP metadata found!")
+
+            _binding, destination = self.sp.pick_binding("single_sign_on_service", self.bindings, "idpsso",
+                                                         entity_id=self.entity_id)
+
+            self.rstate = rndstr()
+            self.ht_args = self.sp.apply_binding(_binding, msg_str, destination, relay_state=self.rstate)
+            url = self.ht_args["headers"][0][1]
+
+        except Exception, exc:
+            raise Exception("Failed to construct the AuthnRequest: %s" % exc)
+
+        return url
+
 
 
     def eval_authn_response(self, saml_response, binding=BINDING_HTTP_POST):

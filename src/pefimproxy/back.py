@@ -6,7 +6,7 @@ import xmldsig
 
 from urlparse import urlparse
 from saml2.extension.pefim import SPCertEnc
-from saml2.md import Extensions
+from saml2.samlp import Extensions
 from saml2 import BINDING_HTTP_REDIRECT, element_to_extension_element
 from saml2 import BINDING_HTTP_POST
 from saml2.client_base import Base

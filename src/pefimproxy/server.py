@@ -238,7 +238,7 @@ class WsgiApplication(object, ):
             name = args.config
             pefim_server_conf = __import__(args.config)
         except:
-            return (False, "No configuration file with the name %s in the path!" % name)
+            return (False, "No configuration or invalid file with the name %s in the path!" % name)
         message = "The configuration file \"%s\" are missing the mandatory parameters: " % name
         error = False
         for param in WsgiApplication.CONF_MANDITORY_PARAMETERS:

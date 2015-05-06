@@ -122,11 +122,12 @@ class TestIdP(object):
             xml = self.idp.unravel(saml_request, binding, AuthnRequest.msgtype)
             if xml.lower().find("begin certificate") > 0 or xml.lower().find("end certificate") > 0:
                 return False
-            xml_1 = xml.split("SPCertEnc", 1)
-            xml_2 = xml_1[1].split("KeyInfo", 1)
-            xml_3 = xml_2[1].split("X509Data", 1)
-            xml_4 = xml_3[1].split("X509Certificate", 1)
-            return len(xml_4) == 2
+            xml_1 = xml.split("Extensions", 1)
+            xml_2 = xml_1[1].split("SPCertEnc", 1)
+            xml_3 = xml_2[1].split("KeyInfo", 1)
+            xml_4 = xml_3[1].split("X509Data", 1)
+            xml_5 = xml_4[1].split("X509Certificate", 1)
+            return len(xml_5) == 2
         except Exception:
             return False
 
