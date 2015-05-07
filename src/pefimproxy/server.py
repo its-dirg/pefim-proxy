@@ -1,6 +1,7 @@
 import logging
 import re
 from logging.handlers import BufferingHandler
+from time import gmtime
 from uuid import uuid4
 import importlib
 import sys
@@ -84,7 +85,19 @@ class WsgiApplication(object, ):
             self.static_dir = self.base_dir
         else:
             self.static_dir = "/opt/pefimproxy/"
-        self.logger = WsgiApplication.create_logger(server_conf.LOG_FILE, self.base_dir)
+        utc = True
+        try:
+            utc = server_conf.LOG_UTC
+        except:
+            pass
+
+        debug = False
+        try:
+            debug = args.debug
+        except:
+            pass
+
+        self.logger = WsgiApplication.create_logger(server_conf.LOG_FILE, self.base_dir, utc, debug)
         # read the configuration file
         config = importlib.import_module(args.config)
         # deal with metadata only once
@@ -169,7 +182,7 @@ class WsgiApplication(object, ):
         #Read arguments.
         parser = argparse.ArgumentParser()
         #True if the server should save debug logs.
-        parser.add_argument('-d', dest='debug', action='store_true', help="Not implemented yet.")
+        parser.add_argument('-d', dest='debug', action='store_true', help="Use this flag while debugging.")
         parser.add_argument('-pe', dest='pe', action='store_true', help="Add this flag to print the exception that "
                                                                         "that is the reason for an invalid "
                                                                         "configuration error.")
@@ -250,13 +263,14 @@ class WsgiApplication(object, ):
         return (True, "All is ok!")
 
     @staticmethod
-    def create_logger(filename, base_dir):
+    def create_logger(filename, base_dir, utc=True, debug=False):
         """
         Creates a logger with a given filename.
         :param filename: File name for the log
         :return: A logger class.
         """
-        logger = logging.getLogger("")
+        logger = logging.getLogger("pefimproxy")
+        logger.propagate = False
         logfile_name = base_dir + filename
         handler = logging.FileHandler(logfile_name)
         base_formatter = logging.Formatter(
@@ -265,8 +279,13 @@ class WsgiApplication(object, ):
                '[%(client)s,%(path)s,%(cid)s] %(message)s')
         handler.setFormatter(base_formatter)
         logger.addHandler(handler)
-        logger.setLevel(logging.DEBUG)
+        if debug:
+            logger.setLevel(logging.DEBUG)
+        else:
+            logger.setLevel(logging.ERROR)
         _formatter = logging.Formatter(cpc)
+        if utc:
+            logging.Formatter.converter = gmtime
         fil_handler = logging.FileHandler(logfile_name)
         fil_handler.setFormatter(_formatter)
 
