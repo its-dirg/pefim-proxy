@@ -86,6 +86,10 @@ Thererfore each SP&#8217;s metadata MUST contain an EntityDescriptor</p>
 <div class="section" id="extra-configuration">
 <h3>Extra configuration<a class="headerlink" href="#extra-configuration" title="Permalink to this headline">¶</a></h3>
 <p>pefim_proxy_conf can be extended with the following configurations.</p>
+<p>#The timestamp will use UTC for the logs if LOG_UTC is True.
+#If LOG_UTC is false, will local time be used as the timstamp for the log.
+#If removed the default setting is True.
+LOG_UTC = True</p>
 <p>#Force the NameID to be persistent regardless of &lt;NameIDFormat&gt; values in the SP metadata.
 #If set to True, the nameid will always be persistent, i.e. the nameid value will always
 #be the same per SP, by hashing or encrypting the IDP&#8217;s NameID.

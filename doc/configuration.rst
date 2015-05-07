@@ -43,6 +43,11 @@ Extra configuration
 ^^^^^^^^^^^^^^^^^^^
 pefim_proxy_conf can be extended with the following configurations.
 
+#The timestamp will use UTC for the logs if LOG_UTC is True.
+#If LOG_UTC is false, will local time be used as the timstamp for the log.
+#If removed the default setting is True.
+LOG_UTC = True
+
 #Force the NameID to be persistent regardless of <NameIDFormat> values in the SP metadata.
 #If set to True, the nameid will always be persistent, i.e. the nameid value will always
 #be the same per SP, by hashing or encrypting the IDP's NameID.
