@@ -81,7 +81,7 @@ Synopsis:  pefim_server proxy_conf server_conf [options]
 proxy_config	Configuration file for the pysaml sp and idp.
 server_config	Configuration file with server settings.
 
--d	 			debug  (Not implemented yet)
+-d	 			Use this flag while debugging.
 -pe				Add this flag to print the exception that is the reason for an invalid configuration error.
 -e				Entity id for the underlying IdP if only one IdP should be used. Otherwise will a discovery server be used.
 -e_alg			Encryption algorithm to be used for target id 2.
