@@ -15,7 +15,7 @@ from saml2.httputil import ServiceError
 from saml2.httputil import SeeOther
 from saml2.httputil import Unauthorized
 from saml2.response import VerificationError, AuthnResponse
-from saml2.s_utils import UnknownPrincipal, MissingValue, Unsupported, OtherError
+from saml2.s_utils import UnknownPrincipal, OtherError
 from saml2.s_utils import UnsupportedBinding
 
 from service import BINDING_MAP
@@ -50,7 +50,7 @@ class SamlSP(service.Service):
                         logger.error("SP's metadata MUST contain an EntityDescriptor to define requested attributes. "
                                      "Entityid=%s" % calling_sp_entity_id)
                         raise OtherError("Metadata is missing element /samlp:EntityDescriptor/samlp:Extensions/samlp:"
-                                     "EntityAttributes")
+                                         " EntityAttributes")
                 if key != "default" and set(tmp_conf["config"].entity_category) == ent_cat:
                     self.sp = Base(tmp_conf["config"], state_cache=cache)
                     break
@@ -62,7 +62,7 @@ class SamlSP(service.Service):
             else:
                 logger.error("UnsupportedBinding: %s" % (ent_cat,))
                 raise OtherError("Entity category in metadata is not supported /samlp:EntityDescriptor/"
-                                   "samlp:Extensions/samlp: EntityAttributes")
+                                 "samlp:Extensions/samlp: EntityAttributes")
         #self.sp = Base(config, state_cache=cache)
         self.environ = environ
         self.start_response = start_response
@@ -200,7 +200,9 @@ class SamlSP(service.Service):
             return resp
 
         try:
-            _response = self.sp.parse_authn_request_response(_authn_response["SAMLResponse"], binding, self.cache,
+            _response = self.sp.parse_authn_request_response(_authn_response["SAMLResponse"],
+                                                             binding,
+                                                             self.cache,
                                                              decrypt=False)
         except UnknownPrincipal, excp:
             logger.error("UnknownPrincipal: %s" % (excp,))
@@ -228,8 +230,8 @@ class SamlSP(service.Service):
 
         url_map = []
         for key in self.sp_dict:
-            sp = self.sp_dict[key]
-            for endp, binding in sp.config.getattr("endpoints", "sp")[
+            tmp_sp = self.sp_dict[key]
+            for endp, binding in tmp_sp.config.getattr("endpoints", "sp")[
                     "assertion_consumer_service"]:
                 p = urlparse(endp)
                 url_map.append(("^%s?(.*)$" % p.path[1:], ("SP", "authn_response",
@@ -237,7 +239,7 @@ class SamlSP(service.Service):
                 url_map.append(("^%s$" % p.path[1:], ("SP", "authn_response",
                                                       BINDING_MAP[binding], key)))
 
-            for endp, binding in sp.config.getattr("endpoints", "sp")[
+            for endp, binding in tmp_sp.config.getattr("endpoints", "sp")[
                     "discovery_response"]:
                 p = urlparse(endp)
                 #url_map.append(("^%s\?(.*)$" % p.path[1:], ("SP", "disco_response", BINDING_MAP[binding], key)))

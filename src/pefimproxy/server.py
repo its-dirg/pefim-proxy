@@ -5,7 +5,6 @@ from time import gmtime
 from uuid import uuid4
 import importlib
 import sys
-from os import path
 import os
 from saml2.authn_context import AuthnBroker, authn_context_class_ref, UNSPECIFIED
 
@@ -22,9 +21,12 @@ from pefimproxy.util.http import HttpHelper, Session
 from pefimproxy.util.targetid import TargetIdHandler
 
 
-class start_response_intercept(object):
+class StartResponseIntercept(object):
     def __init__(self, start_response):
         self.start_response = start_response
+        self.status = None
+        self.response_headers = None
+        self.exc_info = None
 
     def __call__(self, status, response_headers, exc_info=None):
         self.status = status
@@ -32,8 +34,10 @@ class start_response_intercept(object):
         self.exc_info = exc_info
         self.start_response(status, response_headers, exc_info=None)
 
+
 def username_password_authn_dummy():
     return None
+
 
 class WsgiApplication(object, ):
 
@@ -232,7 +236,7 @@ class WsgiApplication(object, ):
             name = args.server_config
             pefim_server_conf = __import__(args.server_config)
         except:
-            return (False, "No configuration file with the name %s in the path!" % name)
+            return False, "No configuration file with the name %s in the path!" % name
         message = "The configuration file \"%s\" are missing the mandatory parameters: " % name
         error = False
         for param in WsgiApplication.SERVER_CONF_MANDITORY_PARAMETERS:
@@ -240,8 +244,8 @@ class WsgiApplication(object, ):
                 message += " %s," % param
                 error = True
         if error:
-            return (False, message)
-        return (True, "All is ok!")
+            return False, message
+        return True, "All is ok!"
 
     @staticmethod
     def validate_config(args):
@@ -251,7 +255,7 @@ class WsgiApplication(object, ):
             name = args.config
             pefim_server_conf = __import__(args.config)
         except:
-            return (False, "No configuration or invalid file with the name %s in the path!" % name)
+            return False, "No configuration or invalid file with the name %s in the path!" % name
         message = "The configuration file \"%s\" are missing the mandatory parameters: " % name
         error = False
         for param in WsgiApplication.CONF_MANDITORY_PARAMETERS:
@@ -259,8 +263,8 @@ class WsgiApplication(object, ):
                 message += " %s," % param
                 error = True
         if error:
-            return (False, message)
-        return (True, "All is ok!")
+            return False, message
+        return True, "All is ok!"
 
     @staticmethod
     def create_logger(filename, base_dir, utc=True, debug=False):
@@ -355,17 +359,16 @@ class WsgiApplication(object, ):
 
         resp_args = _idp.idp.response_args(orig_authn_req)
 
-
         try:
             _authn_info = response.authn_info()[0]
-            AUTHN_BROKER = AuthnBroker()
-            AUTHN_BROKER.add(authn_context_class_ref(_authn_info[0]), username_password_authn_dummy, 0, self.issuer)
-            _authn = AUTHN_BROKER.get_authn_by_accr(_authn_info[0])
+            authn_broker = AuthnBroker()
+            authn_broker.add(authn_context_class_ref(_authn_info[0]), username_password_authn_dummy, 0, self.issuer)
+            _authn = authn_broker.get_authn_by_accr(_authn_info[0])
             #_authn = {"class_ref": _authn_info[0], "authn_auth": self.issuer}
         except:
-            AUTHN_BROKER = AuthnBroker()
-            AUTHN_BROKER.add(authn_context_class_ref(UNSPECIFIED), username_password_authn_dummy, 0, self.issuer)
-            _authn = AUTHN_BROKER.get_authn_by_accr(UNSPECIFIED)
+            authn_broker = AuthnBroker()
+            authn_broker.add(authn_context_class_ref(UNSPECIFIED), username_password_authn_dummy, 0, self.issuer)
+            _authn = authn_broker.get_authn_by_accr(UNSPECIFIED)
 
         identity = response.ava
 
@@ -413,26 +416,26 @@ class WsgiApplication(object, ):
         :return: Depends on the request. Always a WSGI response where start_response first have to be initialized.
         """
         try:
-            start_response = start_response_intercept(start_response)
+            start_response = StartResponseIntercept(start_response)
             session = Session(environ)
 
-            path = environ.get('PATH_INFO', '').lstrip('/')
-            HttpHelper.log_request(environ, path, self.logger)
+            tmp_path = environ.get('PATH_INFO', '').lstrip('/')
+            HttpHelper.log_request(environ, tmp_path, self.logger)
             response = None
 
             for regex, spec in self.urls:
-                match = re.search(regex, path)
+                match = re.search(regex, tmp_path)
                 if match is not None:
                     try:
                         environ['oic.url_args'] = match.groups()[0]
                     except IndexError:
-                        environ['oic.url_args'] = path
+                        environ['oic.url_args'] = tmp_path
 
                     response = self.run_entity(spec, environ, start_response)
                     break
 
             try:
-                return HttpHelper.handle_static(path, self.static_dir, start_response, self.logger)
+                return HttpHelper.handle_static(tmp_path, self.static_dir, start_response, self.logger)
             except Exception, excp:
                 pass
 

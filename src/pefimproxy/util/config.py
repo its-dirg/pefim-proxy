@@ -1,8 +1,5 @@
 import copy
-from saml2.config import config_factory, Config
-from importlib import import_module
-__author__ = 'haho0032'
-
+from saml2.config import Config
 
 def get_configurations(config_file, metadata_construction=True, metadata=None, cache=None):
     if config_file.endswith(".py"):
@@ -17,12 +14,12 @@ def get_configurations(config_file, metadata_construction=True, metadata=None, c
     assert conf.SP_ENTITY_CATEGORIES, "The configuration file must contain a list of entity categories in." \
                                       " SP_ENTITY_CATEGORIES"
     assert isinstance(conf.SP_ENTITY_CATEGORIES, list), "SP_ENTITY_CATEGORIES must be a list."
-    assert len(conf.SP_ENTITY_CATEGORIES)>0, "SP_ENTITY_CATEGORIES list must not be empty."
+    assert len(conf.SP_ENTITY_CATEGORIES) > 0, "SP_ENTITY_CATEGORIES list must not be empty."
 
     base_config = copy.deepcopy(copy.deepcopy(conf.CONFIG))
 
     idp_config = copy.deepcopy(base_config)
-    idp_config["entityid"] = idp_config["entityid"] % ""
+    idp_config["entityid"] %= ""
     del(idp_config["service"]["sp"])
     new_endpoints = {}
     for endpoint in idp_config["service"]["idp"]["endpoints"]:
@@ -33,7 +30,6 @@ def get_configurations(config_file, metadata_construction=True, metadata=None, c
     idp_config["service"]["idp"]["endpoints"] = new_endpoints
 
     sp_configs = {}
-    sp_config = {}
     sp_entity_categories = copy.deepcopy(conf.SP_ENTITY_CATEGORIES)
     if conf.SP_ENTITY_CATEGORIES_DEFAULT is not None:
         sp_entity_categories.append({"name": "default", "entcat": conf.SP_ENTITY_CATEGORIES_DEFAULT})
@@ -43,7 +39,7 @@ def get_configurations(config_file, metadata_construction=True, metadata=None, c
         tmp_sp_config = copy.deepcopy(base_config)
         tmp_sp_config["entity_category"] = sp_cat["entcat"]
         del(tmp_sp_config["service"]["idp"])
-        tmp_sp_config["entityid"] = tmp_sp_config["entityid"] % sp_url
+        tmp_sp_config["entityid"] %= sp_url
         new_endpoints = {}
         for endpoint in tmp_sp_config["service"]["sp"]["endpoints"]:
             new_endpoint = []

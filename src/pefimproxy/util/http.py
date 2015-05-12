@@ -30,7 +30,6 @@ class Session(object):
 
 class HttpHelper(object):
 
-
     @staticmethod
     def query_dictionary(environ):
         """

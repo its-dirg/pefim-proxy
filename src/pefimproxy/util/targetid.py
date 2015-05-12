@@ -1,6 +1,5 @@
 import json
 import os
-from uuid import uuid4
 import hashlib
 from Crypto import Random
 from Crypto.Cipher import AES
@@ -18,8 +17,9 @@ class TargetIdHandler(object):
             self.e_alg = self.AES_ALG[0]
         else:
             self.e_alg = e_alg
-        assert self.e_alg in self.AES_ALG, "The encryption alg %s do not exist. Use one of the follwing encryption " \
-                                            "alg: %s" % (self.alg, self.AES_ALG)
+        assert self.e_alg in self.AES_ALG, \
+            "The encryption alg %s do not exist. Use one of the follwing encryption alg: %s" % (self.e_alg,
+                                                                                                self.AES_ALG)
         typ, bits, cmode = self.e_alg.split("_")
         if key is None:
             self.key = os.urandom(int(bits) >> 3)
@@ -60,11 +60,11 @@ class TargetIdHandler(object):
 
     def tid2_encrypt(self, tid1, sp_entityid, iv=None):
         tid2 = self.tid2_json(tid1, sp_entityid)
-        tid2_encrypt = self.aes.encrypt(msg=tid2, alg=self.e_alg, iv=None)
+        tid2_encrypt = self.aes.encrypt(msg=tid2, alg=self.e_alg, iv=iv)
         return tid2_encrypt
 
     def tid2_decrypt(self, tid2_encrypted, iv=None):
-        tid2_json = self.aes.decrypt(tid2_encrypted, alg=self.e_alg, iv=None)
+        tid2_json = self.aes.decrypt(tid2_encrypted, alg=self.e_alg, iv=iv)
         return self.tid2_dict(tid2_json)
 
     def tid2_hash(self, tid1, sp_entityid):

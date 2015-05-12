@@ -1,7 +1,5 @@
 import os
 import sys
-from os import path
-import traceback
 from cherrypy import wsgiserver
 from cherrypy.wsgiserver import ssl_pyopenssl
 from beaker.middleware import SessionMiddleware
@@ -30,7 +28,8 @@ def main():
         SRV.stats['Enabled'] = True
 
         if pefim_server_conf.HTTPS:
-            SRV.ssl_adapter = ssl_pyopenssl.pyOpenSSLAdapter(pefim_server_conf.SERVER_CERT, pefim_server_conf.SERVER_KEY,
+            SRV.ssl_adapter = ssl_pyopenssl.pyOpenSSLAdapter(pefim_server_conf.SERVER_CERT,
+                                                             pefim_server_conf.SERVER_KEY,
                                                              pefim_server_conf.CERT_CHAIN)
         wsgi_app.logger.info("Server starting")
         print "Server listening on port: %s" % pefim_server_conf.PORT

@@ -16,6 +16,7 @@ import service
 
 logger = logging.getLogger(__name__)
 
+
 class SamlIDP(service.Service):
     def __init__(self, environ, start_response, conf, cache, incomming, tid1_to_tid2, tid2_to_tid1, 
                  encmsg_to_iv, tid_handler, force_persistant_nameid, force_no_userid_subject_cacheing, idp=None):
@@ -145,12 +146,11 @@ class SamlIDP(service.Service):
                                       self.start_response, _request["RelayState"])
             except OtherError as exc:
                 _resp = self.idp.create_error_response(_dict["authn_req"].id, _dict["resp_args"]["destination"], exc,
-                                               sign=self.sign_response)
+                                                       sign=self.sign_response)
                 http_args = self.idp.apply_binding(_binding, "%s" % _resp,
                                                    _dict["resp_args"]["destination"],
                                                    _request["RelayState"], response=True)
                 return self.response(_binding, http_args)
-
 
     def get_tid1_resp(self, org_resp):
         tid1 = org_resp.assertion.subject.name_id.text
@@ -205,7 +205,6 @@ class SamlIDP(service.Service):
         :param authn:
         :param resp_args:
         :param relay_state:
-        :param sign_response:
         :return:
         """
         if self.force_persistant_nameid:

@@ -5,10 +5,11 @@ __author__ = 'haho0032'
 
 def main():
     import argparse
-    import os, sys
-    from saml2.config import config_factory, Config
-    from saml2.metadata import create_metadata_string, entity_descriptor, entities_descriptor
-    from saml2.sigver import make_temp, security_context
+    import os
+    import sys
+    from saml2.config import Config
+    from saml2.metadata import entity_descriptor, entities_descriptor
+    from saml2.sigver import security_context
     from saml2.validate import valid_instance
     from pefimproxy.util.config import get_configurations
 
@@ -23,14 +24,12 @@ def main():
     parser.add_argument('-n', dest='name')
     parser.add_argument('-s', dest='sign', action='store_true',
                         help="sign the metadata")
-    parser.add_argument('-x', dest='xmlsec',
-                    help="xmlsec binaries to be used for the signing")
+    parser.add_argument('-x', dest='xmlsec', help="xmlsec binaries to be used for the signing")
     parser.add_argument(dest="config")
 
     ed_id = "pefim_proxy"
     valid_for = 0
     nspair = {"xs": "http://www.w3.org/2001/XMLSchema"}
-    paths = [".", "/opt/local/bin"]
     args = parser.parse_args()
 
     if args.valid:
