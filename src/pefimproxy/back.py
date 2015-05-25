@@ -202,8 +202,7 @@ class SamlSP(service.Service):
         try:
             _response = self.sp.parse_authn_request_response(_authn_response["SAMLResponse"],
                                                              binding,
-                                                             self.cache,
-                                                             decrypt=False)
+                                                             self.cache)
         except UnknownPrincipal, excp:
             logger.error("UnknownPrincipal: %s" % (excp,))
             resp = ServiceError("UnknownPrincipal: %s" % (excp,))

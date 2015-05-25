@@ -250,10 +250,23 @@ class SamlIDP(service.Service):
                 self.tid1_to_tid2[tid1] = tid2
 
         advice = None
-        for tmp_assertion in org_resp.response.assertion:
-            if tmp_assertion.advice is not None:
-                advice = tmp_assertion.advice
-                break
+        _assertion = None
+        try:
+            _assertion = org_resp.assertions
+        except:
+            _assertion = org_resp.assertion
+        if not _assertion:
+            try:
+                _assertion = org_resp.response.assertions
+            except:
+                _assertion = org_resp.response.assertion
+        if _assertion is not None and not isinstance(_assertion, list):
+            _assertion = [_assertion]
+        if _assertion:
+            for tmp_assertion in _assertion:
+                if tmp_assertion.advice is not None:
+                    advice = tmp_assertion.advice
+                    break
         if advice is not None:
             _resp.assertion.advice = advice
         #_resp.assertion = []
