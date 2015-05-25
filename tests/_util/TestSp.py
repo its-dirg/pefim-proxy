@@ -11,7 +11,7 @@ from saml2 import BINDING_HTTP_REDIRECT, BINDING_HTTP_POST, BINDING_HTTP_ARTIFAC
 from saml2.client import Saml2Client
 from saml2 import s_utils
 from saml2.samlp import Extensions
-import xmldsig
+from saml2 import xmldsig
 import datetime
 import os
 

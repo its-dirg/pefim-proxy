@@ -2,7 +2,7 @@
 import logging
 import time
 from saml2.saml import NAMEID_FORMAT_PERSISTENT
-import xmldsig
+from saml2 import xmldsig
 
 from urlparse import urlparse
 from saml2.extension.pefim import SPCertEnc
