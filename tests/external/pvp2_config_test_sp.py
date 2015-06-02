@@ -65,6 +65,7 @@ CONFIG = {
     #You must change this to your files!
     "key_file": BASEDIR + "/../keys/mykey.pem",
     "cert_file": BASEDIR + "/../keys/mycert.pem",
+    "encryption_keypairs": [{"key_file": BASEDIR + "/../keys/test.key", "cert_file": BASEDIR + "/../keys/test.crt"}],
     #"attribute_map_dir": "./attributemaps",
     "metadata": {
         "local": [BASEDIR + "/../pefim_proxy_conf_local.xml"],

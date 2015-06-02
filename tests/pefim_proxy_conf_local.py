@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import importlib
 import os.path
 
 from saml2 import BINDING_HTTP_REDIRECT
@@ -9,7 +10,11 @@ from saml2.extension.idpdisc import BINDING_DISCO
 from saml2.saml import NAME_FORMAT_URI
 from saml2.saml import NAMEID_FORMAT_TRANSIENT
 from saml2.saml import NAMEID_FORMAT_PERSISTENT
-from tests import pefim_server_conf_default
+import sys
+
+sys.path.insert(0, os.getcwd())
+
+server_conf = importlib.import_module("pefim_server_conf_default")
 
 xmlsec_path = None
 
@@ -30,7 +35,7 @@ def full_path(local_file):
     return os.path.join(BASEDIR, local_file)
 
 
-BASE = pefim_server_conf_default.ISSUER + "%s"
+BASE = server_conf.ISSUER + "%s"
 
 DISCO_SRV = "https://md.nordu.net/role/idp.ds"
 
@@ -86,6 +91,8 @@ CONFIG = {
     "debug": 1,
     "key_file": full_path("proxy_cert/new_server.key"),
     "cert_file": full_path("proxy_cert/new_server.crt"),
+    "encryption_keypairs": [{"key_file":  full_path("proxy_cert/test.key"),
+                             "cert_file": full_path("proxy_cert/test.crt")}],
     "metadata": {
         #"mdfile": ["swamid2.md"],
         "local": [
