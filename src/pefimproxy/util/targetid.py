@@ -1,3 +1,4 @@
+from builtins import object
 import json
 import os
 import hashlib
@@ -37,7 +38,13 @@ class TargetIdHandler(object):
         assert len(self.iv) == AES.block_size, "The initialization vector must be %d size." % AES.block_size
         h_alg_ok = False
         approved_hash_alg = ""
-        for tmp_h_alg in hashlib.algorithms:
+
+        try:
+            algorithms = hashlib.algorithms_guaranteed
+        except AttributeError:
+            algorithms = hashlib.algorithms
+
+        for tmp_h_alg in algorithms:
             if self.h_alg == tmp_h_alg:
                 h_alg_ok = True
             approved_hash_alg += tmp_h_alg + ","

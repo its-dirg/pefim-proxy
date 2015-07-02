@@ -1,12 +1,14 @@
 import copy
+import importlib
 from saml2.config import Config
+
 
 def get_configurations(config_file, metadata_construction=True, metadata=None, cache=None):
     if config_file.endswith(".py"):
             config_file = config_file[:-3]
     conf = None
     try:
-        conf = __import__(config_file, level=-1)
+        conf = importlib.import_module(config_file)
     except:
         pass
     assert conf, "No configuration/invalid file with the name: %s" % config_file

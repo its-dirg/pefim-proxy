@@ -1,6 +1,9 @@
 #!/usr/bin/env python
+from __future__ import absolute_import
+from future import standard_library
+standard_library.install_aliases()
 import logging
-from urlparse import urlparse
+from urllib.parse import urlparse
 from saml2 import class_name
 from saml2.httputil import ServiceError
 from saml2.httputil import Response
@@ -12,7 +15,7 @@ from saml2.s_utils import UnsupportedBinding
 from saml2.saml import NAMEID_FORMAT_PERSISTENT
 from saml2.server import Server
 from saml2.sigver import encrypt_cert_from_item, pre_signature_part
-import service
+from . import service
 
 logger = logging.getLogger(__name__)
 

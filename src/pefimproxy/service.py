@@ -1,8 +1,10 @@
 #!/usr/bin/env python
+from future import standard_library
+standard_library.install_aliases()
+#from builtins import str
+from builtins import object
 import logging
-
-from urlparse import parse_qs
-
+from urllib.parse import parse_qs
 from saml2 import BINDING_HTTP_REDIRECT
 from saml2 import BINDING_SOAP
 from saml2 import BINDING_HTTP_POST
@@ -24,7 +26,7 @@ BINDING_MAP = {
     BINDING_DISCO: "disco"
 }
 
-INV_BINDING_MAP = dict([(y, x) for x, y in BINDING_MAP.items()])
+INV_BINDING_MAP = dict([(y, x) for x, y in list(BINDING_MAP.items())])
 
 
 class Service(object):
@@ -47,7 +49,7 @@ class Service(object):
     def unpack_redirect(self):
         if "QUERY_STRING" in self.environ:
             _qs = self.environ["QUERY_STRING"]
-            return dict([(k, v[0]) for k, v in parse_qs(_qs).items()])
+            return dict([(k, v[0]) for k, v in list(parse_qs(_qs).items())])
         else:
             return None
 
@@ -55,7 +57,7 @@ class Service(object):
         _dict = HttpHelper.query_dictionary(self.environ)
         logger.debug("unpack_post:: %s" % _dict)
         try:
-            return dict([(k, v[0]) for k, v in _dict.items()])
+            return dict([(k, v[0]) for k, v in list(_dict.items())])
         except Exception:
             return None
 
@@ -130,3 +132,4 @@ class Service(object):
     def uri(self, func):
         _dict = self.unpack_either()
         return self._operation(func, _dict, BINDING_SOAP)
+

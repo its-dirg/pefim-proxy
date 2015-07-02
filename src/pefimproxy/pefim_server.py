@@ -1,3 +1,5 @@
+from __future__ import print_function
+import importlib
 import os
 import sys
 from cherrypy import wsgiserver
@@ -16,7 +18,7 @@ def main():
 
     args = WsgiApplication.arg_parser()
 
-    pefim_server_conf = __import__(args.server_config)
+    pefim_server_conf = importlib.import_module(args.server_config)
     try:
         global wsgi_app
         wsgi_app = WsgiApplication(args, base_dir=os.getcwd() + "/")
@@ -32,12 +34,12 @@ def main():
                                                              pefim_server_conf.SERVER_KEY,
                                                              pefim_server_conf.CERT_CHAIN)
         wsgi_app.logger.info("Server starting")
-        print "Server listening on port: %s" % pefim_server_conf.PORT
+        print("Server listening on port: %s" % pefim_server_conf.PORT)
         try:
             SRV.start()
         except KeyboardInterrupt:
             SRV.stop()
-    except Exception, excp:
+    except Exception as excp:
         args = WsgiApplication.arg_parser(error="Invalid configuration in %s or %s, please consult the documentation."
                                                 % (args.config, args.server_config),
                                           exception=" Exception:%s" % exception_trace(excp))

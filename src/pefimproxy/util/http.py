@@ -1,8 +1,12 @@
+from future import standard_library
+standard_library.install_aliases()
+from builtins import object
 __author__ = 'haho0032'
-from StringIO import StringIO
-import json
-from urlparse import parse_qs
 
+import json
+
+from io import StringIO
+from urllib.parse import parse_qs
 
 class Session(object):
     BEAKER = 'beaker.session'
@@ -57,7 +61,7 @@ class HttpHelper(object):
 
         else:
             qs = dict((k, v if len(v) > 1 else v[0]) for k, v in
-                      parse_qs(query).iteritems())
+                      list(parse_qs(query).items()))
         return qs
 
     @staticmethod

@@ -1,3 +1,5 @@
+from builtins import str
+from builtins import object
 import logging
 import re
 from logging.handlers import BufferingHandler
@@ -234,7 +236,7 @@ class WsgiApplication(object, ):
         name = ""
         try:
             name = args.server_config
-            pefim_server_conf = __import__(args.server_config)
+            pefim_server_conf = importlib.import_module(args.server_config)
         except:
             return False, "No configuration file with the name %s in the path!" % name
         message = "The configuration file \"%s\" are missing the mandatory parameters: " % name
@@ -253,8 +255,8 @@ class WsgiApplication(object, ):
         name = ""
         try:
             name = args.config
-            pefim_server_conf = __import__(args.config)
-        except:
+            pefim_server_conf = importlib.import_module(args.config)
+        except Exception as e:
             return False, "No configuration or invalid file with the name %s in the path!" % name
         message = "The configuration file \"%s\" are missing the mandatory parameters: " % name
         error = False
@@ -436,7 +438,7 @@ class WsgiApplication(object, ):
 
             try:
                 return HttpHelper.handle_static(tmp_path, self.static_dir, start_response, self.logger)
-            except Exception, excp:
+            except Exception as excp:
                 pass
 
             if response is None:
@@ -444,7 +446,7 @@ class WsgiApplication(object, ):
             self.logger.info("response:")
             self.logger.info(response)
             return response(environ, start_response)
-        except Exception, excp:
+        except Exception as excp:
             urn = str(uuid4().urn)
             self.logger.error("uuid: " + urn + str(exception_trace(excp)))
             resp = ServiceError(urn)
