@@ -3,7 +3,8 @@ import importlib
 import os
 import sys
 from cherrypy import wsgiserver
-from cherrypy.wsgiserver import ssl_pyopenssl
+# from cherrypy.wsgiserver import ssl_pyopenssl # TODO How to use ssl_pyopenssl in python3?
+from cherrypy.wsgiserver.ssl_builtin import BuiltinSSLAdapter
 from beaker.middleware import SessionMiddleware
 from saml2.s_utils import exception_trace
 from pefimproxy.server import WsgiApplication
@@ -30,9 +31,14 @@ def main():
         SRV.stats['Enabled'] = True
 
         if pefim_server_conf.HTTPS:
-            SRV.ssl_adapter = ssl_pyopenssl.pyOpenSSLAdapter(pefim_server_conf.SERVER_CERT,
-                                                             pefim_server_conf.SERVER_KEY,
-                                                             pefim_server_conf.CERT_CHAIN)
+            # TODO How to use pyOpenSSLAdapter in python3?
+            # SRV.ssl_adapter = pyOpenSSLAdapter(pefim_server_conf.SERVER_CERT,
+            #                                    pefim_server_conf.SERVER_KEY,
+            #                                    pefim_server_conf.CERT_CHAIN)
+            SRV.ssl_adapter = BuiltinSSLAdapter(pefim_server_conf.SERVER_CERT,
+                                                pefim_server_conf.SERVER_KEY,
+                                                pefim_server_conf.CERT_CHAIN)
+
         wsgi_app.logger.info("Server starting")
         print("Server listening on port: %s" % pefim_server_conf.PORT)
         try:
